@@ -1060,12 +1060,28 @@ const LS='sl_mega_v2';
 // Trage hier deine Supabase-Daten ein.
 // Solange leer, speichert die App nur lokal.
 // ═══════════════════════════════════════
-const SUPABASE_URL = 'https://yeicscdbcyeivlgwdvif.supabase.co/rest/v1/';   
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllaWNzY2RiY3llaXZsZ3dkdmlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1NzIwMDcsImV4cCI6MjEwMzE0ODAwN30.w2fn_3_UyYeHeHuiFWMirtxfIojZ7eO6IX_UqlO7PjI';  
+// URL: nur die Basis-Adresse, OHNE Schrägstrich am Ende.
+//   richtig: 'https://abcdefgh.supabase.co'
+//   falsch:  'https://abcdefgh.supabase.co/'
+//   falsch:  'https://supabase.com/dashboard/project/abcdefgh'
+const SUPABASE_URL = 'https://yeicscdbcyeivlgwdvif.supabase.co';
+// KEY: der "Publishable key" (beginnt mit sb_publishable_)
+//      oder alternativ der alte "anon public" Key (beginnt mit eyJ)
+//      NIEMALS der sb_secret_ / service_role Key!
+const SUPABASE_KEY = 'sb_publishable_2fFasryQA8DTVYT48PIRLA_FPAO-OaT';
 // ═══════════════════════════════════════
 
 let sb=null, sbUser=null, syncState='local', saveTimer=null, pendingSave=false, authTab='login';
-function cloudEnabled(){return !!(SUPABASE_URL&&SUPABASE_KEY);}
+// Eingaben säubern: Leerzeichen, Anführungszeichen, Schrägstrich am Ende, versehentliche Pfade
+function cleanURL(u){
+  var s=String(u||'').trim().replace(/^["'<]+|["'>]+$/g,'');
+  if(!s)return '';
+  if(!/^https?:\/\//i.test(s))s='https://'+s;
+  try{var p=new URL(s);return p.protocol+'//'+p.host;}catch(e){return s.replace(/\/+$/,'');}
+}
+function cleanKEY(k){return String(k||'').trim().replace(/^["'<]+|["'>]+$/g,'');}
+const SB_URL=cleanURL(SUPABASE_URL), SB_KEY=cleanKEY(SUPABASE_KEY);
+function cloudEnabled(){return !!(SB_URL&&SB_KEY);}
 
 function setSync(state,txt){
   syncState=state;
@@ -1082,9 +1098,23 @@ function syncBadgeClick(){
 // ── Supabase laden ──
 async function initCloud(){
   if(!cloudEnabled()){setSync('local','LOKAL');return false;}
+  // Häufiger Fehler: Dashboard-Adresse statt Projekt-Adresse kopiert
+  if(/supabase\.com$/i.test(SB_URL)||/\/dashboard/i.test(String(SUPABASE_URL))){
+    console.error('SUPABASE_URL sieht nach der Dashboard-Adresse aus. Richtig ist die Project URL aus Project Settings → API, Form: https://xxxxx.supabase.co');
+    setSync('offline','URL FALSCH');
+    return false;
+  }
+  if(!/^https:\/\/[a-z0-9-]+\.supabase\.(co|in|red)$/i.test(SB_URL)){
+    console.warn('SUPABASE_URL hat eine ungewöhnliche Form:',SB_URL,'— erwartet wird https://xxxxx.supabase.co');
+  }
+  if(/^sb_secret_/i.test(SB_KEY)||/service_role/i.test(SB_KEY)){
+    console.error('Es wurde ein GEHEIMER Schlüssel eingetragen. Bitte den Publishable key (sb_publishable_...) verwenden!');
+    setSync('offline','KEY FALSCH');
+    return false;
+  }
   try{
     const mod=await import('https://esm.sh/@supabase/supabase-js@2');
-    sb=mod.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+    sb=mod.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
     const {data}=await sb.auth.getSession();
     sbUser=data&&data.session?data.session.user:null;
     return true;
@@ -1170,7 +1200,11 @@ async function authSubmit(){
   }catch(e){
     const m=(e&&e.message)||'Unbekannter Fehler';
     if(/Invalid login/i.test(m))authMsg('E-Mail oder Passwort falsch.','err');
-    else if(/already registered/i.test(m))authMsg('Diese E-Mail ist schon registriert — wechsle zu "Anmelden".','err');
+    else if(/already registered|already been registered/i.test(m))authMsg('Diese E-Mail ist schon registriert — wechsle zu "Anmelden".','err');
+    else if(/Invalid path|Failed to fetch|NetworkError/i.test(m))authMsg('Verbindung fehlgeschlagen. Prüfe SUPABASE_URL (nur https://xxx.supabase.co, ohne / am Ende).','err');
+    else if(/Invalid API key|JWT/i.test(m))authMsg('Schlüssel ungültig. Publishable key aus Project Settings → API Keys kopieren (oder Legacy-Tab → anon).','err');
+    else if(/row-level security|violates/i.test(m))authMsg('Tabelle fehlt oder Policies nicht gesetzt — SQL aus SETUP.md ausführen.','err');
+    else if(/Email not confirmed/i.test(m))authMsg('E-Mail noch nicht bestätigt. Link im Postfach anklicken oder "Confirm email" in Supabase abschalten.','err');
     else authMsg(m,'err');
   }
 }
@@ -2169,5 +2203,3 @@ document.addEventListener('visibilitychange',function(){
 </script>
 </body>
 </html>
-
-
