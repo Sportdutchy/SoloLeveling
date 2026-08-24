@@ -1,0 +1,2171 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solo Leveling Quest System</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Quest System">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#07060f">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07060f;--bg2:#0d0b1a;--bg3:#13102a;--bg4:#1a1535;
+  --p:#7c3aed;--p2:#5b21b6;--c:#06b6d4;--g:#22c55e;--r:#ef4444;--gold:#f59e0b;--orange:#f97316;
+  --pb:rgba(124,58,237,0.28);--text:#e2e8f0;--t2:#94a3b8;--t3:#475569;
+}
+body.theme-red{--p:#dc2626;--p2:#991b1b;--c:#f97316;--pb:rgba(220,38,38,0.28);}
+body.theme-blue{--p:#2563eb;--p2:#1d4ed8;--c:#06b6d4;--pb:rgba(37,99,235,0.28);}
+body.theme-green{--p:#16a34a;--p2:#15803d;--c:#22c55e;--pb:rgba(22,163,74,0.28);}
+body.theme-gold{--p:#d97706;--p2:#b45309;--c:#f59e0b;--pb:rgba(217,119,6,0.28);}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 50% -10%,rgba(124,58,237,.13) 0%,transparent 60%),radial-gradient(ellipse 40% 30% at 90% 90%,rgba(6,182,212,.07) 0%,transparent 50%);pointer-events:none;z-index:0;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--p2);border-radius:2px;}
+
+/* ── PARTICLES ── */
+.ptcl{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.p-dot{position:absolute;width:2px;height:2px;background:var(--p);border-radius:50%;animation:pfloat linear infinite;opacity:0;}
+@keyframes pfloat{0%{transform:translateY(100vh);opacity:0;}10%{opacity:.5;}90%{opacity:.2;}100%{transform:translateY(-10vh) translateX(var(--dx));opacity:0;}}
+
+/* ── ONBOARDING ── */
+#ob{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;text-align:center;}
+.ob-logo{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:5px;color:var(--c);margin-bottom:14px;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:.4}50%{opacity:1}}
+.ob-title{font-family:'Orbitron',monospace;font-size:clamp(24px,6vw,42px);font-weight:900;background:linear-gradient(135deg,#a78bfa,#7c3aed,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;}
+.ob-sub{font-size:12px;color:var(--t2);letter-spacing:4px;text-transform:uppercase;margin-bottom:32px;}
+.ob-card{background:var(--bg2);border:1px solid var(--pb);border-radius:16px;padding:26px 22px;max-width:440px;width:100%;position:relative;overflow:hidden;z-index:1;}
+.ob-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--p),var(--c),transparent);}
+.ob-step{display:none;}.ob-step.active{display:block;}
+.ob-lbl{font-size:10px;letter-spacing:3px;color:var(--c);text-transform:uppercase;margin-bottom:10px;}
+.ob-inp{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(124,58,237,.3);border-radius:8px;padding:12px 16px;color:var(--text);font-family:'Orbitron',monospace;font-size:15px;letter-spacing:2px;outline:none;text-align:center;margin-bottom:14px;transition:border-color .2s;}
+.ob-inp:focus{border-color:rgba(124,58,237,.8);}
+.ob-inp::placeholder{color:var(--t3);font-size:11px;}
+.ob-btn{width:100%;background:linear-gradient(135deg,var(--p),var(--p2));border:none;border-radius:8px;padding:13px;color:#fff;font-family:'Orbitron',monospace;font-size:12px;font-weight:700;letter-spacing:3px;cursor:pointer;transition:all .2s;}
+.ob-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(124,58,237,.4);}
+.ob-skip{background:none;border:none;color:var(--t3);font-family:'Rajdhani',sans-serif;font-size:12px;cursor:pointer;margin-top:9px;letter-spacing:1px;text-decoration:underline;}
+.ob-hint{font-size:10px;color:var(--t3);margin-top:7px;letter-spacing:1px;}
+.ob-prog{display:flex;gap:6px;justify-content:center;margin-bottom:18px;}
+.ob-pip{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);transition:background .3s;}
+.ob-pip.on{background:var(--p);}
+.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px;}
+.theme-btn{border:2px solid transparent;border-radius:8px;padding:9px 4px;cursor:pointer;text-align:center;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;transition:all .2s;}
+.theme-btn.sel{transform:scale(1.06);}
+.avatar-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px;}
+.av-btn{background:var(--bg3);border:2px solid transparent;border-radius:8px;padding:9px 6px;cursor:pointer;font-size:22px;text-align:center;transition:all .2s;}
+.av-btn.sel{border-color:var(--p);background:rgba(124,58,237,.15);}
+
+/* ── APP ── */
+#app{display:none;position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:0 12px 60px;}
+
+/* ── HEADER ── */
+.hdr{text-align:center;padding:16px 0 12px;border-bottom:1px solid var(--pb);margin-bottom:12px;}
+.hdr-alert{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:4px;color:var(--c);margin-bottom:3px;animation:blink 2s infinite;}
+.hdr-title{font-family:'Orbitron',monospace;font-size:clamp(14px,4vw,20px);font-weight:900;background:linear-gradient(135deg,#a78bfa,var(--p),var(--c));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;}
+.hdr-quote{font-size:10px;color:var(--t3);margin-top:4px;font-style:italic;}
+
+/* ── PROFILE ── */
+.profile{background:var(--bg2);border:1px solid var(--pb);border-radius:12px;padding:13px;margin-bottom:11px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;position:relative;overflow:hidden;}
+.profile::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--p),var(--c),transparent);}
+.avatar-display{width:56px;height:56px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;border:2px solid var(--pb);flex-shrink:0;background:var(--bg3);cursor:pointer;transition:all .25s;position:relative;}
+.avatar-display.supplement-glow{animation:suppglow 1.5s ease-in-out infinite;}
+@keyframes suppglow{0%,100%{box-shadow:0 0 8px rgba(6,182,212,.4),0 0 20px rgba(6,182,212,.2)}50%{box-shadow:0 0 20px rgba(6,182,212,.8),0 0 40px rgba(124,58,237,.5),0 0 60px rgba(6,182,212,.3)}}
+.supp-indicator{position:absolute;top:-4px;right:-4px;width:14px;height:14px;border-radius:50%;background:var(--c);border:2px solid var(--bg);font-size:8px;display:flex;align-items:center;justify-content:center;}
+.p-name{font-family:'Orbitron',monospace;font-size:13px;margin-bottom:2px;}
+.p-title-lbl{font-size:10px;color:var(--gold);letter-spacing:1px;margin-bottom:2px;min-height:13px;}
+.p-lvl{font-size:11px;color:var(--t2);margin-bottom:4px;}
+.xpbar{background:rgba(255,255,255,.06);border-radius:4px;height:6px;overflow:hidden;}
+.xpfill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--p),var(--c));transition:width .8s cubic-bezier(.4,0,.2,1);}
+.xplbl{font-size:10px;color:var(--t2);margin-top:2px;}
+.pstats{display:flex;flex-direction:column;gap:4px;text-align:right;}
+.ps{font-size:10px;color:var(--t2);}
+.ps span{font-family:'Orbitron',monospace;font-size:15px;font-weight:700;display:block;}
+
+/* ── BANNERS ── */
+.mood-banner{background:var(--bg2);border:1px solid var(--pb);border-radius:8px;padding:8px 12px;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px;}
+.mood-label{font-size:9px;letter-spacing:2px;color:var(--c);text-transform:uppercase;}
+.mood-btns-sm{display:flex;gap:4px;}
+.mb-sm{background:var(--bg3);border:1px solid var(--pb);border-radius:5px;padding:3px 7px;font-size:15px;cursor:pointer;transition:all .14s;}
+.mb-sm.sel{border-color:var(--p);background:rgba(124,58,237,.15);}
+.mood-effect{font-size:10px;color:var(--t2);}
+.warn-banner{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.26);border-radius:7px;padding:8px 11px;margin-bottom:9px;display:none;align-items:center;gap:7px;}
+.warn-banner.show{display:flex;}
+.pen-banner{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.26);border-radius:7px;padding:8px 11px;margin-bottom:9px;display:none;align-items:center;gap:7px;}
+.pen-banner.show{display:flex;}
+.rival-banner{background:linear-gradient(135deg,rgba(239,68,68,.07),rgba(124,58,237,.05));border:1px solid rgba(239,68,68,.22);border-radius:7px;padding:8px 12px;margin-bottom:9px;display:flex;align-items:center;gap:10px;}
+.rival-vs{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--r);}
+
+/* ── NAV ── */
+.mnav{display:flex;gap:2px;background:var(--bg2);border:1px solid var(--pb);border-radius:9px;padding:3px;margin-bottom:11px;overflow-x:auto;}
+.mnav::-webkit-scrollbar{display:none;}
+.mnb{flex:0 0 auto;padding:6px 8px;background:transparent;border:none;border-radius:5px;color:var(--t2);font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:.8px;cursor:pointer;transition:all .15s;text-transform:uppercase;white-space:nowrap;}
+.mnb.on{background:linear-gradient(135deg,rgba(124,58,237,.36),rgba(6,182,212,.16));color:#fff;border:1px solid rgba(124,58,237,.38);}
+.mnb:hover:not(.on){color:var(--text);background:rgba(255,255,255,.04);}
+.mpanel{display:none;}.mpanel.on{display:block;}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;flex-wrap:wrap;gap:5px;}
+.timer{font-family:'Orbitron',monospace;font-size:13px;color:var(--r);}
+.timer.warn{animation:twarn .6s ease infinite;}
+@keyframes twarn{0%,100%{color:var(--r)}50%{color:#fff}}
+.dayend-btn{background:rgba(239,68,68,.09);border:1px solid rgba(239,68,68,.27);border-radius:5px;padding:4px 10px;color:#fca5a5;font-size:10px;cursor:pointer;font-family:'Rajdhani',sans-serif;letter-spacing:1px;}
+
+/* ── PROGRESS ── */
+.progw{background:var(--bg2);border:1px solid var(--pb);border-radius:7px;padding:8px 12px;margin-bottom:9px;display:flex;align-items:center;gap:10px;}
+.prog-t{flex:1;background:rgba(255,255,255,.06);border-radius:3px;height:6px;overflow:hidden;}
+.prog-f{height:100%;border-radius:3px;transition:width .5s;background:linear-gradient(90deg,var(--p),var(--c));}
+.prog-txt{font-size:10px;color:var(--t2);white-space:nowrap;}
+
+/* ── SECTION HEADER ── */
+.sechd{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.sectitle{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--c);display:flex;align-items:center;gap:5px;}
+.sectitle::before{content:'';display:block;width:14px;height:2px;background:var(--c);}
+
+/* ── COLLAPSIBLE ── */
+.coll-hd{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:8px 11px;background:var(--bg2);border:1px solid var(--pb);border-radius:7px;margin-bottom:5px;transition:all .16s;}
+.coll-hd:hover{border-color:rgba(124,58,237,.42);}
+.coll-hd.open{border-radius:7px 7px 0 0;margin-bottom:0;border-color:rgba(124,58,237,.38);}
+.coll-title{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--c);display:flex;align-items:center;gap:7px;}
+.coll-cat-icon{font-size:13px;}
+.coll-meta{display:flex;align-items:center;gap:7px;}
+.coll-prog{font-size:10px;color:var(--t2);}
+.coll-arrow{font-size:11px;color:var(--t2);transition:transform .22s;}
+.coll-hd.open .coll-arrow{transform:rotate(180deg);}
+.coll-body{background:var(--bg2);border:1px solid rgba(124,58,237,.36);border-top:none;border-radius:0 0 7px 7px;padding:7px;margin-bottom:7px;}
+.coll-body.closed{display:none;}
+.coll-wrap{margin-bottom:8px;}
+
+/* ── QUEST CARD ── */
+.qcard{background:var(--bg3);border:1px solid var(--pb);border-radius:7px;padding:9px 11px;margin-bottom:5px;display:flex;align-items:flex-start;gap:9px;position:relative;overflow:hidden;transition:all .15s;}
+.qcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+.qcard.sport::before{background:var(--r);}
+.qcard.habit::before{background:var(--g);}
+.qcard.learn::before{background:var(--c);}
+.qcard.good::before{background:var(--gold);}
+.qcard.special::before{background:linear-gradient(180deg,var(--p),var(--c));}
+.qcard.boss::before{background:linear-gradient(180deg,#ff0000,#7c3aed);}
+.qcard.custom::before{background:#a855f7;}
+.qcard:hover:not(.done){border-color:rgba(124,58,237,.38);}
+.qcard.done{opacity:.48;border-color:rgba(34,197,94,.18);}
+.qcard.boss-card{background:linear-gradient(135deg,rgba(239,68,68,.07),var(--bg3));border-color:rgba(239,68,68,.26);}
+.qchk{width:23px;height:23px;border-radius:4px;border:2px solid rgba(124,58,237,.36);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .15s;margin-top:1px;}
+.qcard.done .qchk{background:var(--g);border-color:var(--g);}
+.qchk svg{width:11px;height:11px;opacity:0;transition:opacity .15s;}
+.qcard.done .qchk svg{opacity:1;}
+.qinfo{flex:1;min-width:0;}
+.qname{font-size:13px;font-weight:700;margin-bottom:2px;}
+.qcard.done .qname{text-decoration:line-through;color:var(--t2);}
+.boss-lbl{font-size:8px;letter-spacing:2px;color:var(--r);font-weight:700;text-transform:uppercase;margin-bottom:2px;animation:blink 1.5s infinite;}
+.qmeta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:2px;}
+.qcat{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;padding:2px 5px;border-radius:3px;font-weight:700;}
+.sport .qcat{background:rgba(239,68,68,.12);color:#fca5a5;}
+.habit .qcat{background:rgba(34,197,94,.1);color:#86efac;}
+.learn .qcat{background:rgba(6,182,212,.1);color:#67e8f9;}
+.good .qcat{background:rgba(245,158,11,.1);color:#fcd34d;}
+.special .qcat,.boss .qcat{background:rgba(124,58,237,.13);color:#c4b5fd;}
+.custom .qcat{background:rgba(168,85,247,.1);color:#d8b4fe;}
+.qxp{font-size:10px;color:var(--gold);font-weight:700;}
+.qdesc{font-size:10px;color:var(--t3);margin-top:2px;}
+.q-note{font-size:10px;color:var(--c);margin-top:2px;font-style:italic;}
+.qacts{display:flex;flex-direction:column;gap:3px;flex-shrink:0;}
+.swapbtn{background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);border-radius:3px;padding:2px 5px;color:#67e8f9;font-size:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;letter-spacing:1px;white-space:nowrap;transition:all .13s;}
+.swapbtn:disabled{opacity:.2;cursor:not-allowed;}
+.delbtn{background:none;border:none;color:rgba(239,68,68,.26);cursor:pointer;font-size:11px;padding:2px 3px;transition:color .13s;}
+.delbtn:hover{color:var(--r);}
+.notebtn{background:none;border:none;color:rgba(6,182,212,.35);cursor:pointer;font-size:10px;padding:2px 3px;transition:color .13s;}
+.notebtn:hover{color:var(--c);}
+.unchkbtn{background:none;border:none;color:rgba(245,158,11,.35);cursor:pointer;font-size:10px;padding:2px 3px;transition:color .13s;}
+.unchkbtn:hover{color:var(--gold);}
+.spbadge{font-size:8px;letter-spacing:2px;background:linear-gradient(90deg,var(--p),var(--c));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700;margin-bottom:2px;}
+
+/* ── SUPPLEMENTS ── */
+.supp-header{background:linear-gradient(135deg,rgba(6,182,212,.1),rgba(124,58,237,.08));border:1px solid rgba(6,182,212,.28);border-radius:10px;padding:13px;margin-bottom:12px;position:relative;overflow:hidden;}
+.supp-header::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--c),var(--p));}
+.supp-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.supp-title{font-family:'Orbitron',monospace;font-size:11px;font-weight:900;color:var(--c);}
+.supp-prog-row{display:flex;align-items:center;gap:10px;}
+.supp-prog-track{flex:1;background:rgba(255,255,255,.06);border-radius:3px;height:7px;overflow:hidden;}
+.supp-prog-fill{height:100%;border-radius:3px;transition:width .5s;background:linear-gradient(90deg,var(--c),var(--p));}
+.supp-prog-txt{font-size:11px;color:var(--t2);white-space:nowrap;}
+.supp-boost-banner{background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.35);border-radius:7px;padding:8px 12px;margin-top:9px;display:flex;align-items:center;gap:8px;animation:suppboostpulse 2s ease-in-out infinite;}
+@keyframes suppboostpulse{0%,100%{opacity:.8}50%{opacity:1;box-shadow:0 0 15px rgba(6,182,212,.3)}}
+.supp-boost-icon{font-size:20px;animation:spin 3s linear infinite;}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.supp-card{background:var(--bg2);border:1px solid var(--pb);border-radius:8px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;transition:all .15s;position:relative;overflow:hidden;}
+.supp-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--c),var(--p));}
+.supp-card:hover{border-color:rgba(6,182,212,.35);}
+.supp-card.done{opacity:.5;border-color:rgba(34,197,94,.2);}
+.supp-chk{width:23px;height:23px;border-radius:4px;border:2px solid rgba(6,182,212,.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .15s;}
+.supp-card.done .supp-chk{background:var(--c);border-color:var(--c);}
+.supp-chk svg{width:11px;height:11px;opacity:0;transition:opacity .15s;}
+.supp-card.done .supp-chk svg{opacity:1;}
+.supp-info{flex:1;min-width:0;}
+.supp-name{font-size:13px;font-weight:700;margin-bottom:1px;}
+.supp-card.done .supp-name{text-decoration:line-through;color:var(--t2);}
+.supp-meta{display:flex;gap:7px;align-items:center;}
+.supp-dose{font-size:10px;color:var(--c);}
+.supp-time{font-size:10px;color:var(--t2);}
+.supp-note{font-size:10px;color:var(--t3);margin-top:1px;}
+.supp-streak{font-size:9px;color:var(--gold);font-weight:700;}
+.supp-del{background:none;border:none;color:rgba(239,68,68,.26);cursor:pointer;font-size:11px;padding:2px 3px;transition:color .13s;flex-shrink:0;}
+.supp-del:hover{color:var(--r);}
+.supp-unchk{background:none;border:none;color:rgba(245,158,11,.3);cursor:pointer;font-size:10px;padding:2px 3px;transition:color .13s;flex-shrink:0;}
+.supp-unchk:hover{color:var(--gold);}
+.supp-time-badge{font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:2px 5px;border-radius:3px;font-weight:700;}
+.supp-time-badge.morning{background:rgba(245,158,11,.12);color:#fcd34d;}
+.supp-time-badge.afternoon{background:rgba(249,115,22,.12);color:#fdba74;}
+.supp-time-badge.evening{background:rgba(124,58,237,.12);color:#c4b5fd;}
+.supp-time-badge.anytime{background:rgba(6,182,212,.1);color:#67e8f9;}
+
+/* ── INVENTORY ── */
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:9px;margin-bottom:13px;}
+.inv-card{background:var(--bg2);border:1px solid var(--pb);border-radius:9px;padding:12px;text-align:center;position:relative;overflow:hidden;transition:all .18s;}
+.inv-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.inv-card.rarity-common::before{background:var(--t2);}
+.inv-card.rarity-rare::before{background:var(--c);}
+.inv-card.rarity-epic::before{background:var(--p);}
+.inv-card.rarity-legendary::before{background:linear-gradient(90deg,var(--gold),var(--r));}
+.inv-icon{font-size:26px;margin-bottom:5px;}
+.inv-name{font-size:12px;font-weight:700;margin-bottom:3px;}
+.inv-desc{font-size:9px;color:var(--t2);line-height:1.4;margin-bottom:5px;}
+.inv-count{font-family:'Orbitron',monospace;font-size:11px;color:var(--gold);margin-bottom:5px;}
+.inv-cost{font-size:9px;color:var(--t3);margin-bottom:5px;}
+.inv-rarity{font-size:8px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:6px;}
+.rarity-common .inv-rarity{color:var(--t2);}
+.rarity-rare .inv-rarity{color:var(--c);}
+.rarity-epic .inv-rarity{color:var(--p);}
+.rarity-legendary .inv-rarity{color:var(--gold);}
+.inv-btn{width:100%;background:linear-gradient(135deg,var(--p),var(--p2));border:none;border-radius:5px;padding:5px;color:#fff;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .14s;}
+.inv-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 3px 10px rgba(124,58,237,.3);}
+.inv-btn:disabled{opacity:.3;cursor:not-allowed;}
+.inv-use-btn{width:100%;background:linear-gradient(135deg,var(--g),#166534);border:none;border-radius:5px;padding:5px;color:#fff;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .14s;margin-top:3px;}
+.inv-use-btn:hover{box-shadow:0 3px 10px rgba(34,197,94,.3);}
+.inv-use-btn:disabled{opacity:.3;cursor:not-allowed;}
+.active-item-banner{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.28);border-radius:7px;padding:8px 12px;margin-bottom:11px;display:flex;align-items:center;gap:8px;animation:blink 2s infinite;}
+
+/* ── SKILLS ── */
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:8px;margin-bottom:12px;}
+.skill-card{background:var(--bg2);border:1px solid var(--pb);border-radius:8px;padding:11px;position:relative;overflow:hidden;transition:all .18s;}
+.skill-card.unlocked{border-color:rgba(34,197,94,.3);}
+.skill-card.locked{opacity:.5;}
+.skill-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.skill-card.unlocked::before{background:linear-gradient(90deg,var(--g),var(--c));}
+.skill-card.locked::before{background:var(--t3);}
+.skill-icon{font-size:20px;margin-bottom:4px;}
+.skill-name{font-size:12px;font-weight:700;margin-bottom:2px;}
+.skill-desc{font-size:9px;color:var(--t2);line-height:1.4;margin-bottom:4px;}
+.skill-cost{font-size:9px;color:var(--gold);font-weight:700;}
+.skill-status.ul{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--g);margin-top:3px;}
+.unlock-btn{width:100%;margin-top:5px;background:linear-gradient(135deg,var(--p),var(--p2));border:none;border-radius:4px;padding:5px;color:#fff;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .13s;}
+.unlock-btn:hover{box-shadow:0 2px 8px rgba(124,58,237,.3);}
+.unlock-btn:disabled{opacity:.28;cursor:not-allowed;}
+
+/* ── LEARNED SKILLS ── */
+.learned-header{background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(6,182,212,.06));border:1px solid rgba(34,197,94,.22);border-radius:9px;padding:12px;margin-bottom:12px;text-align:center;}
+.learned-count{font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--g);}
+.learned-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:8px;}
+.lskill-card{background:var(--bg2);border:1px solid rgba(34,197,94,.26);border-radius:8px;padding:12px;position:relative;overflow:hidden;}
+.lskill-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--g),var(--c));}
+.lskill-icon{font-size:22px;margin-bottom:5px;}
+.lskill-name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.lskill-desc{font-size:9px;color:var(--t2);line-height:1.4;margin-bottom:5px;}
+.lskill-effect{font-size:9px;color:var(--g);font-weight:700;}
+.lskill-effect::before{content:'▶ ';}
+.skill-obtained-date{font-size:8px;color:var(--t3);margin-top:3px;}
+
+/* ── BODY ── */
+.body-tabs{display:flex;gap:3px;background:var(--bg2);border:1px solid var(--pb);border-radius:7px;padding:3px;margin-bottom:11px;}
+.btab{flex:1;padding:6px 4px;background:transparent;border:none;border-radius:4px;color:var(--t2);font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .14s;text-transform:uppercase;}
+.btab.on{background:linear-gradient(135deg,rgba(124,58,237,.32),rgba(6,182,212,.15));color:#fff;border:1px solid rgba(124,58,237,.34);}
+.bpanel{display:none;}.bpanel.on{display:block;}
+.blayout{display:flex;gap:13px;align-items:flex-start;flex-wrap:wrap;}
+.fig-col{flex:0 0 182px;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.ctrl-col{flex:1;min-width:175px;display:flex;flex-direction:column;gap:6px;}
+.blbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--c);text-align:center;}
+.bglvl{font-size:10px;color:var(--t2);text-align:center;}
+.bxpc{background:var(--bg2);border:1px solid var(--pb);border-radius:5px;padding:5px 9px;width:100%;text-align:center;margin-top:2px;}
+.bxpv{font-family:'Orbitron',monospace;font-size:15px;font-weight:700;}
+.bxpl{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t2);}
+.mgrow{background:var(--bg2);border:1px solid var(--pb);border-radius:6px;padding:8px 10px;}
+.mgtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;}
+.mglbl{font-size:12px;font-weight:700;}
+.mgmeta{font-size:9px;}
+.barw{height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden;margin-bottom:4px;}
+.barf{height:100%;border-radius:3px;transition:width .4s,background .4s;}
+.btnrow{display:flex;gap:4px;}
+.trbtn{flex:1;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.24);border-radius:3px;padding:3px 0;color:#c4b5fd;font-size:10px;font-weight:700;cursor:pointer;font-family:'Rajdhani',sans-serif;text-transform:uppercase;transition:all .12s;}
+.trbtn:hover{background:rgba(124,58,237,.2);}
+.trbtn.cs{background:rgba(239,68,68,.09);border-color:rgba(239,68,68,.22);color:#fca5a5;}
+.trbtn.cs:hover{background:rgba(239,68,68,.19);}
+.decbtn{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.14);border-radius:3px;padding:3px 6px;color:#fca5a5;font-size:10px;cursor:pointer;font-family:'Rajdhani',sans-serif;}
+.leg{background:var(--bg2);border:1px solid var(--pb);border-radius:6px;padding:8px 9px;}
+.leg-t{font-size:8px;letter-spacing:2px;color:var(--c);text-transform:uppercase;margin-bottom:5px;}
+.leg-r{display:flex;align-items:center;gap:5px;margin-bottom:2px;}
+.leg-d{width:11px;height:7px;border-radius:2px;flex-shrink:0;}
+.leg-tx{font-size:9px;color:var(--t2);}
+.rstbtn{width:100%;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.14);border-radius:4px;padding:5px;color:#fca5a5;font-size:10px;cursor:pointer;font-family:'Rajdhani',sans-serif;letter-spacing:1px;margin-top:2px;}
+.measure-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:7px;margin-bottom:10px;}
+.mcard{background:var(--bg2);border:1px solid var(--pb);border-radius:7px;padding:10px;text-align:center;}
+.mcard-val{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;margin-bottom:1px;}
+.mcard-unit{font-size:9px;color:var(--t2);}
+.mcard-lbl{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);margin-top:2px;}
+.mcard-trend{font-size:9px;margin-top:2px;}
+.mcard-trend.up{color:var(--r);}
+.mcard-trend.down{color:var(--g);}
+
+/* ── RIVAL ── */
+.rival-card{background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(124,58,237,.06));border:1px solid rgba(239,68,68,.24);border-radius:10px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden;}
+.rival-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--r),var(--p));}
+.rival-vs-big{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:var(--r);margin-bottom:8px;}
+.rival-compare{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-bottom:10px;}
+.rival-you{text-align:left;}
+.rival-enemy{text-align:right;}
+.rival-center{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--r);text-align:center;}
+.rival-stat{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;}
+.rival-stat.winning{color:var(--g);}
+.rival-stat.losing{color:var(--r);}
+.rival-label{font-size:10px;color:var(--t2);margin-top:2px;}
+.rival-gap{background:rgba(255,255,255,.04);border-radius:6px;padding:7px;text-align:center;font-size:11px;color:var(--t2);}
+
+/* ── SEASON ── */
+.season-card{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(239,68,68,.06));border:1px solid rgba(245,158,11,.26);border-radius:10px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden;}
+.season-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--r));}
+.season-name{font-family:'Orbitron',monospace;font-size:13px;font-weight:900;color:var(--gold);margin-bottom:4px;}
+.season-timer{font-family:'Orbitron',monospace;font-size:22px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.season-prog{background:rgba(255,255,255,.06);border-radius:3px;height:6px;overflow:hidden;margin-bottom:6px;}
+.season-pfill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--r));}
+.season-ranks{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px;margin-top:10px;}
+.season-rank-card{background:var(--bg2);border:1px solid var(--pb);border-radius:7px;padding:9px;display:flex;align-items:center;gap:8px;}
+.season-rank-pos{font-family:'Orbitron',monospace;font-size:13px;font-weight:900;color:var(--gold);min-width:20px;}
+.season-rank-name{font-size:11px;font-weight:700;}
+.season-rank-xp{font-size:10px;color:var(--t2);}
+.prestige-card{background:linear-gradient(135deg,rgba(239,68,68,.1),rgba(245,158,11,.08));border:1px solid rgba(239,68,68,.28);border-radius:10px;padding:14px;margin-bottom:12px;}
+.prestige-level{font-family:'Orbitron',monospace;font-size:32px;font-weight:900;color:var(--r);text-align:center;}
+.prestige-bonus{font-size:11px;color:var(--gold);text-align:center;margin-top:4px;}
+.prestige-btn{width:100%;margin-top:9px;background:linear-gradient(135deg,var(--r),#7f1d1d);border:none;border-radius:6px;padding:10px;color:#fff;font-family:'Orbitron',monospace;font-size:10px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .18s;}
+.prestige-btn:hover{box-shadow:0 4px 16px rgba(239,68,68,.4);}
+.prestige-btn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* ── QUEST TEMPLATES ── */
+.template-card{background:var(--bg2);border:1px solid var(--pb);border-radius:8px;padding:11px;margin-bottom:7px;transition:all .16s;}
+.template-name{font-size:13px;font-weight:700;margin-bottom:4px;}
+.template-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
+.template-tag{font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:2px 5px;border-radius:3px;background:rgba(124,58,237,.12);color:#c4b5fd;}
+.template-btns{display:flex;gap:6px;}
+.template-load-btn{flex:1;background:linear-gradient(135deg,var(--p),var(--p2));border:none;border-radius:4px;padding:5px;color:#fff;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;cursor:pointer;}
+.template-del-btn{background:rgba(239,68,68,.09);border:1px solid rgba(239,68,68,.2);border-radius:4px;padding:5px 9px;color:#fca5a5;font-size:10px;cursor:pointer;font-family:'Rajdhani',sans-serif;}
+
+/* ── RECURRING ── */
+.recur-card{background:var(--bg2);border:1px solid var(--pb);border-radius:7px;padding:9px 11px;margin-bottom:5px;display:flex;align-items:center;gap:9px;}
+.recur-days{display:flex;gap:3px;}
+.recur-day{width:20px;height:20px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;cursor:pointer;transition:all .14s;}
+.recur-day.on{background:var(--p);color:#fff;}
+.recur-day.off{background:rgba(255,255,255,.06);color:var(--t3);}
+.recur-day.today-active{border:1px solid var(--c);}
+
+/* ── GOALS ── */
+.goal-card{background:var(--bg2);border:1px solid var(--pb);border-radius:8px;padding:12px;margin-bottom:7px;position:relative;}
+.goal-title{font-size:13px;font-weight:700;margin-bottom:3px;}
+.goal-deadline{font-size:10px;color:var(--t2);margin-bottom:6px;}
+.goal-barw{background:rgba(255,255,255,.06);border-radius:3px;height:6px;overflow:hidden;margin-bottom:4px;}
+.goal-barf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--p),var(--c));transition:width .5s;}
+.goal-meta{display:flex;justify-content:space-between;font-size:10px;color:var(--t2);}
+.goal-del{position:absolute;top:9px;right:9px;background:none;border:none;color:rgba(239,68,68,.28);cursor:pointer;font-size:11px;}
+.goal-adj{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;}
+.adj-btn{background:var(--bg3);border:1px solid var(--pb);border-radius:3px;padding:3px 7px;color:var(--text);font-size:11px;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all .12s;}
+.adj-btn:hover{border-color:var(--p);}
+
+/* ── STREAKS ── */
+.skgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:7px;margin-bottom:11px;}
+.skcard{background:var(--bg2);border:1px solid var(--pb);border-radius:8px;padding:11px;text-align:center;}
+.skcard.fire{border-color:rgba(245,158,11,.3);}
+.sknum{font-family:'Orbitron',monospace;font-size:26px;font-weight:900;line-height:1;margin-bottom:2px;}
+.sklbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t2);margin-bottom:5px;}
+.dots{display:flex;gap:2px;justify-content:center;flex-wrap:wrap;}
+.dot{width:8px;height:8px;border-radius:2px;background:rgba(255,255,255,.07);}
+.dot.y{background:var(--g);}
+.dot.n{background:var(--r);}
+.dot.t{background:var(--p);animation:blink 1.5s infinite;}
+.giftcard{background:var(--bg2);border:1px solid var(--pb);border-radius:7px;padding:10px;margin-bottom:6px;display:flex;align-items:center;gap:9px;}
+.giftcard.ul{border-color:rgba(245,158,11,.3);}
+.giftcard.lk{opacity:.4;}
+.gi{font-size:18px;width:34px;text-align:center;}
+.ginfo h3{font-size:12px;font-weight:700;margin-bottom:1px;}
+.ginfo p{font-size:9px;color:var(--t2);}
+.greq{margin-left:auto;text-align:right;font-size:9px;color:var(--t2);}
+.greq .gd{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--gold);display:block;}
+.wreport{background:linear-gradient(135deg,rgba(124,58,237,.07),rgba(6,182,212,.05));border:1px solid var(--pb);border-radius:9px;padding:12px;margin-bottom:11px;}
+.wr-title{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--c);margin-bottom:9px;}
+.wr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(85px,1fr));gap:6px;margin-bottom:9px;}
+.wr-item{background:var(--bg2);border-radius:5px;padding:8px;text-align:center;}
+.wr-val{font-family:'Orbitron',monospace;font-size:16px;font-weight:700;margin-bottom:1px;}
+.wr-lbl{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--t2);}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:6px;margin-bottom:11px;}
+.statcard{background:var(--bg2);border:1px solid var(--pb);border-radius:7px;padding:10px;text-align:center;}
+.statval{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;margin-bottom:2px;}
+.statlbl{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--t2);}
+.rankroad{background:var(--bg2);border:1px solid var(--pb);border-radius:8px;padding:11px;}
+.rrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.rrow:last-child{border-bottom:none;}
+.rbsm{width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:11px;font-weight:900;border:1.5px solid;flex-shrink:0;}
+.rname{font-size:11px;font-weight:700;flex:1;}
+.rxp{font-size:9px;color:var(--t2);}
+.rrow.cur{background:rgba(124,58,237,.09);border-radius:5px;padding:6px;margin:0 -2px;}
+.rrow.cur::after{content:'← AKTUELL';font-size:7px;letter-spacing:1px;color:var(--p);font-weight:700;}
+.chart-wrap{background:var(--bg2);border:1px solid var(--pb);border-radius:7px;padding:11px;margin-bottom:9px;}
+.chart-title{font-family:'Orbitron',monospace;font-size:8px;letter-spacing:2px;color:var(--c);margin-bottom:8px;}
+.pie-wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.pie-legend{display:flex;flex-direction:column;gap:3px;}
+.pie-item{display:flex;align-items:center;gap:5px;font-size:9px;}
+.pie-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.heatmap-wrap{background:var(--bg2);border:1px solid var(--pb);border-radius:7px;padding:11px;margin-bottom:9px;overflow-x:auto;}
+.hm-grid{display:flex;gap:2px;flex-wrap:nowrap;}
+.hm-week{display:flex;flex-direction:column;gap:2px;}
+.hm-day{width:11px;height:11px;border-radius:2px;cursor:pointer;transition:transform .12s;}
+.hm-day:hover{transform:scale(1.3);}
+.hm-0{background:rgba(255,255,255,.05);}
+.hm-1{background:rgba(124,58,237,.25);}
+.hm-2{background:rgba(124,58,237,.45);}
+.hm-3{background:rgba(124,58,237,.65);}
+.hm-4{background:#7c3aed;}
+.hm-5{background:#a855f7;}
+
+/* ── DUNGEON ── */
+.dungeon-card{background:linear-gradient(135deg,rgba(124,58,237,.09),rgba(6,182,212,.06));border:1px solid rgba(124,58,237,.32);border-radius:9px;padding:14px;margin-bottom:11px;position:relative;overflow:hidden;}
+.dungeon-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--p),var(--c));}
+.d-timer{font-family:'Orbitron',monospace;font-size:24px;font-weight:900;color:var(--c);text-align:center;margin-bottom:7px;}
+.d-prog{background:rgba(255,255,255,.05);border-radius:3px;height:6px;overflow:hidden;margin-bottom:7px;}
+.d-pfill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--p),var(--c));transition:width .5s;}
+.d-btn{background:linear-gradient(135deg,var(--p),var(--c));border:none;border-radius:5px;padding:8px 14px;color:#fff;font-family:'Orbitron',monospace;font-size:9px;font-weight:700;letter-spacing:2px;cursor:pointer;transition:all .16s;}
+.d-btn:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(124,58,237,.32);}
+.d-btn.danger{background:linear-gradient(135deg,var(--r),#7f1d1d);}
+
+/* ── TITLE CHIP ── */
+.title-chip{background:var(--bg3);border:1px solid var(--pb);border-radius:6px;padding:7px 8px;cursor:pointer;transition:all .16s;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.title-chip:hover{border-color:rgba(124,58,237,.38);}
+.title-chip.active-title{border-color:rgba(245,158,11,.38);background:rgba(245,158,11,.07);}
+.title-chip .ticon{font-size:16px;}
+.title-chip .tname{font-size:9px;font-weight:700;text-align:center;}
+
+/* ── PRODUCTIVITY INSIGHTS ── */
+.insight-card{background:var(--bg2);border:1px solid var(--pb);border-radius:8px;padding:12px;margin-bottom:8px;}
+.insight-icon{font-size:20px;margin-bottom:5px;}
+.insight-title{font-size:12px;font-weight:700;margin-bottom:3px;}
+.insight-text{font-size:10px;color:var(--t2);line-height:1.5;}
+.insight-val{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:var(--c);margin:4px 0;}
+.hour-bars{display:flex;gap:2px;align-items:flex-end;height:40px;margin-top:6px;}
+.hour-bar{flex:1;border-radius:2px 2px 0 0;min-height:3px;transition:height .3s;}
+.hour-lbl{display:flex;gap:2px;margin-top:2px;}
+.hour-lbl-item{flex:1;font-size:7px;color:var(--t3);text-align:center;}
+.cat-warning{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.24);border-radius:6px;padding:7px 10px;font-size:10px;color:#fcd34d;margin-bottom:6px;}
+
+/* ── EXPORT ── */
+.export-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;}
+.exp-btn{flex:1;min-width:100px;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);border-radius:5px;padding:7px 10px;color:#67e8f9;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;text-align:center;transition:all .13s;}
+.imp-btn{flex:1;min-width:100px;background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:5px;padding:7px 10px;color:#fcd34d;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;text-align:center;transition:all .13s;}
+
+/* ── ADD FORM ── */
+.addform{background:var(--bg2);border:1px dashed rgba(124,58,237,.2);border-radius:7px;padding:10px;margin-top:10px;}
+.addlbl{font-size:8px;letter-spacing:2px;color:var(--c);text-transform:uppercase;margin-bottom:7px;}
+.frow{display:flex;gap:5px;margin-bottom:5px;flex-wrap:wrap;}
+.fi{flex:1;min-width:90px;background:rgba(255,255,255,.04);border:1px solid rgba(124,58,237,.18);border-radius:4px;padding:6px 8px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:11px;outline:none;transition:border-color .18s;}
+.fi:focus{border-color:rgba(124,58,237,.52);}
+.fi::placeholder{color:var(--t3);}
+.fs{background:rgba(255,255,255,.04);border:1px solid rgba(124,58,237,.18);border-radius:4px;padding:6px 8px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:11px;outline:none;cursor:pointer;}
+.fs option{background:#1a1530;}
+.addbtn{background:linear-gradient(135deg,var(--p),var(--p2));border:none;border-radius:4px;padding:6px 12px;color:#fff;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.addbtn:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(124,58,237,.3);}
+
+/* ── NOTE MODAL ── */
+.note-modal{display:none;position:fixed;inset:0;background:rgba(7,6,15,.85);z-index:400;align-items:center;justify-content:center;padding:16px;}
+.note-modal.show{display:flex;}
+.note-box{background:var(--bg2);border:1px solid var(--pb);border-radius:11px;padding:18px;max-width:320px;width:100%;}
+.note-title{font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;color:var(--c);margin-bottom:9px;}
+.note-ta{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(124,58,237,.2);border-radius:5px;padding:8px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:11px;outline:none;resize:vertical;min-height:70px;}
+.note-btns{display:flex;gap:6px;margin-top:8px;}
+.note-save{flex:1;background:linear-gradient(135deg,var(--p),var(--p2));border:none;border-radius:4px;padding:7px;color:#fff;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;cursor:pointer;}
+.note-cancel{background:rgba(255,255,255,.05);border:1px solid var(--pb);border-radius:4px;padding:7px 12px;color:var(--t2);font-family:'Rajdhani',sans-serif;font-size:11px;cursor:pointer;}
+.diff-btns{display:flex;gap:4px;margin-top:7px;}
+.dbtn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:3px 7px;font-size:9px;cursor:pointer;font-family:'Rajdhani',sans-serif;color:var(--t2);transition:all .12s;flex:1;}
+.dbtn.easy.sel{background:rgba(34,197,94,.14);border-color:var(--g);color:var(--g);}
+.dbtn.medium.sel{background:rgba(245,158,11,.11);border-color:var(--gold);color:var(--gold);}
+.dbtn.hard.sel{background:rgba(239,68,68,.11);border-color:var(--r);color:#fca5a5;}
+
+/* ── OVERLAYS ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(7,6,15,.93);z-index:500;align-items:center;justify-content:center;padding:16px;}
+.overlay.show{display:flex;}
+.ovbox{background:var(--bg3);border:2px solid var(--p);border-radius:12px;padding:26px 20px;max-width:290px;width:100%;text-align:center;position:relative;animation:ovin .26s ease;}
+@keyframes ovin{from{transform:scale(.92) translateY(14px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.ovbox::before{content:'';position:absolute;inset:-2px;border-radius:14px;background:linear-gradient(135deg,var(--p),var(--c));z-index:-1;}
+.ovtitle{font-family:'Orbitron',monospace;font-size:13px;font-weight:900;margin-bottom:4px;}
+.ovxp{font-family:'Orbitron',monospace;font-size:30px;font-weight:900;color:var(--gold);margin:9px 0;}
+.ovcls{margin-top:12px;background:linear-gradient(135deg,var(--p),var(--c));border:none;border-radius:5px;padding:8px 20px;color:#fff;font-family:'Orbitron',monospace;font-size:9px;font-weight:700;letter-spacing:2px;cursor:pointer;}
+.penbox{background:rgba(7,6,15,.96);border:2px solid var(--r);border-radius:12px;padding:26px 20px;max-width:290px;width:100%;text-align:center;animation:shake .38s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.penbig{font-family:'Orbitron',monospace;font-size:44px;font-weight:900;color:var(--r);}
+.pencls{margin-top:9px;background:rgba(239,68,68,.13);border:1px solid var(--r);border-radius:5px;padding:7px 18px;color:#fca5a5;font-family:'Orbitron',monospace;font-size:8px;font-weight:700;letter-spacing:2px;cursor:pointer;}
+.rankup-box{background:var(--bg3);border:2px solid var(--gold);border-radius:12px;padding:28px 20px;max-width:290px;width:100%;text-align:center;position:relative;animation:rup .42s cubic-bezier(.175,.885,.32,1.275);}
+@keyframes rup{from{transform:scale(.5) rotate(-5deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.rankup-box::before{content:'';position:absolute;inset:-2px;border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--r),var(--p));z-index:-1;}
+.rankup-r{font-family:'Orbitron',monospace;font-size:60px;font-weight:900;color:var(--gold);line-height:1;text-shadow:0 0 32px rgba(245,158,11,.7);}
+.title-ovbox{background:var(--bg3);border:2px solid var(--c);border-radius:12px;padding:22px;max-width:270px;width:100%;text-align:center;position:relative;}
+.supp-complete-box{background:linear-gradient(135deg,rgba(6,182,212,.15),rgba(124,58,237,.12));border:2px solid var(--c);border-radius:12px;padding:26px 20px;max-width:290px;width:100%;text-align:center;animation:suppcompletein .5s cubic-bezier(.175,.885,.32,1.275);}
+@keyframes suppcompletein{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.supp-complete-box::before{content:'';position:absolute;inset:-2px;border-radius:14px;background:linear-gradient(135deg,var(--c),var(--p));z-index:-1;}
+.supp-glow-anim{font-size:50px;animation:spin 2s linear infinite;display:block;margin-bottom:8px;}
+/* ── AUTH / SYNC ── */
+#auth{position:relative;z-index:1;display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;text-align:center;}
+#auth.show{display:flex;}
+.auth-tabs{display:flex;gap:3px;background:var(--bg3);border-radius:7px;padding:3px;margin-bottom:14px;}
+.auth-tab{flex:1;padding:7px;background:transparent;border:none;border-radius:5px;color:var(--t2);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;cursor:pointer;text-transform:uppercase;}
+.auth-tab.on{background:linear-gradient(135deg,rgba(124,58,237,.36),rgba(6,182,212,.16));color:#fff;}
+.auth-msg{font-size:11px;margin-top:10px;min-height:16px;line-height:1.4;}
+.auth-msg.err{color:#fca5a5;}
+.auth-msg.ok{color:#86efac;}
+.auth-msg.info{color:var(--t2);}
+.sync-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;letter-spacing:1px;padding:3px 8px;border-radius:20px;border:1px solid var(--pb);background:var(--bg2);color:var(--t2);cursor:pointer;}
+.sync-badge .dot-i{width:6px;height:6px;border-radius:50%;background:var(--t3);}
+.sync-badge.synced .dot-i{background:var(--g);}
+.sync-badge.saving .dot-i{background:var(--gold);animation:blink 1s infinite;}
+.sync-badge.offline .dot-i{background:var(--r);}
+.sync-badge.local .dot-i{background:var(--t3);}
+.setup-box{background:var(--bg2);border:1px solid var(--pb);border-radius:10px;padding:14px;margin-bottom:11px;text-align:left;}
+.setup-code{background:#05040c;border:1px solid rgba(124,58,237,.2);border-radius:6px;padding:9px;font-family:monospace;font-size:10px;color:#c4b5fd;overflow-x:auto;white-space:pre;margin:7px 0;}
+.prestige-confirm-box{background:rgba(7,6,15,.97);border:2px solid var(--r);border-radius:12px;padding:26px 20px;max-width:290px;width:100%;text-align:center;}
+</style>
+</head>
+<body>
+<div class="ptcl" id="particles"></div>
+
+<!-- ONBOARDING -->
+<!-- AUTH -->
+<div id="auth">
+  <div class="ob-logo">◈ SYSTEM ACCESS ◈</div>
+  <div class="ob-title">QUEST SYSTEM</div>
+  <div class="ob-sub">Hunter Cloud Sync</div>
+  <div class="ob-card">
+    <div class="auth-tabs">
+      <button class="auth-tab on" id="atLogin" onclick="authMode('login')">Anmelden</button>
+      <button class="auth-tab" id="atSignup" onclick="authMode('signup')">Registrieren</button>
+    </div>
+    <div class="ob-lbl" id="authLbl">Willkommen zurück, Hunter</div>
+    <input class="ob-inp" id="authEmail" type="email" placeholder="E-MAIL" autocomplete="email" style="font-size:12px;letter-spacing:1px"/>
+    <input class="ob-inp" id="authPass" type="password" placeholder="PASSWORT" autocomplete="current-password" style="font-size:12px;letter-spacing:1px"/>
+    <button class="ob-btn" id="authBtn" onclick="authSubmit()">EINLOGGEN →</button>
+    <div class="auth-msg info" id="authMsg"></div>
+    <button class="ob-skip" onclick="useLocalOnly()">Ohne Sync fortfahren (nur dieses Gerät)</button>
+  </div>
+</div>
+
+<div id="ob">
+  <div class="ob-logo">◈ SYSTEM NOTIFICATION ◈</div>
+  <div class="ob-title">QUEST SYSTEM</div>
+  <div class="ob-sub">Hunter Management Protocol</div>
+  <div class="ob-card">
+    <div class="ob-prog"><div class="ob-pip on" id="pip0"></div><div class="ob-pip" id="pip1"></div><div class="ob-pip" id="pip2"></div><div class="ob-pip" id="pip3"></div></div>
+    <div class="ob-step active" id="ob0">
+      <div class="ob-lbl">Hunter-Name</div>
+      <input class="ob-inp" id="nameInp" placeholder="DEIN NAME..." maxlength="20" autocomplete="off"/>
+      <button class="ob-btn" onclick="obNext(1)">WEITER →</button>
+      <div class="ob-hint">Fortschritt wird lokal gespeichert</div>
+    </div>
+    <div class="ob-step" id="ob1">
+      <div class="ob-lbl">Wähle deinen Avatar</div>
+      <div class="avatar-grid" id="avatarGrid"></div>
+      <button class="ob-btn" onclick="obNext(2)">WEITER →</button>
+      <button class="ob-skip" onclick="obNext(2)">Überspringen</button>
+    </div>
+    <div class="ob-step" id="ob2">
+      <div class="ob-lbl">Wähle dein Theme</div>
+      <div class="theme-grid">
+        <div class="theme-btn sel" onclick="setTheme('',this)" style="background:rgba(124,58,237,.2);border-color:#7c3aed;color:#a78bfa"><div style="font-size:16px;margin-bottom:2px">💜</div>Lila</div>
+        <div class="theme-btn" onclick="setTheme('red',this)" style="background:rgba(220,38,38,.2);border-color:rgba(220,38,38,.4);color:#fca5a5"><div style="font-size:16px;margin-bottom:2px">❤</div>Rot</div>
+        <div class="theme-btn" onclick="setTheme('blue',this)" style="background:rgba(37,99,235,.2);border-color:rgba(37,99,235,.4);color:#93c5fd"><div style="font-size:16px;margin-bottom:2px">💙</div>Blau</div>
+        <div class="theme-btn" onclick="setTheme('green',this)" style="background:rgba(22,163,74,.2);border-color:rgba(22,163,74,.4);color:#86efac"><div style="font-size:16px;margin-bottom:2px">💚</div>Grün</div>
+        <div class="theme-btn" onclick="setTheme('gold',this)" style="background:rgba(217,119,6,.2);border-color:rgba(217,119,6,.4);color:#fcd34d"><div style="font-size:16px;margin-bottom:2px">💛</div>Gold</div>
+      </div>
+      <button class="ob-btn" onclick="obNext(3)">WEITER →</button>
+    </div>
+    <div class="ob-step" id="ob3">
+      <div class="ob-lbl">Rival einsetzen (optional)</div>
+      <input class="ob-inp" id="rivalInp" placeholder="RIVAL-NAME..." maxlength="20" autocomplete="off" style="margin-bottom:8px"/>
+      <div style="font-size:10px;color:var(--t2);margin-bottom:12px;">Dein Rival ist immer etwas stärker. Er treibt dich an.</div>
+      <button class="ob-btn" onclick="finishOnboard()">SYSTEM AKTIVIEREN ⚡</button>
+      <button class="ob-skip" onclick="S.rivalName='';finishOnboard()">Ohne Rival starten</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-alert">⬛ SYSTEM NOTIFICATION ⬛</div>
+    <div class="hdr-title" id="appTitle">QUEST SYSTEM</div>
+    <div class="hdr-quote" id="quoteEl"></div>
+    <div style="margin-top:6px"><span class="sync-badge local" id="syncBadge" onclick="syncBadgeClick()"><span class="dot-i"></span><span id="syncTxt">LOKAL</span></span></div>
+  </div>
+
+  <div class="profile">
+    <div class="avatar-display" id="avatarDisp" title="Klicke für Stats"><span id="avatarEmoji">⚔</span><span class="supp-indicator" id="suppIndicator" style="display:none">✓</span></div>
+    <div>
+      <div class="p-name" id="pName">HUNTER</div>
+      <div class="p-title-lbl" id="pTitleLbl"></div>
+      <div class="p-lvl">Level <span id="pLvl">1</span> · <span id="pRankName">E-Rang</span><span id="prestigeDisp" style="color:var(--r);font-size:9px;margin-left:6px"></span></div>
+      <div class="xpbar"><div class="xpfill" id="xpFill" style="width:0%"></div></div>
+      <div class="xplbl"><span id="xpCur">0</span> / <span id="xpNxt">200</span> XP</div>
+    </div>
+    <div class="pstats">
+      <div class="ps"><span style="color:var(--gold)" id="psStr">0</span>Streak</div>
+      <div class="ps"><span id="psDone">0</span>Erledigt</div>
+      <div class="ps"><span style="color:var(--r)" id="psPen">0</span>Penalties</div>
+    </div>
+  </div>
+
+  <div class="mood-banner">
+    <div><div class="mood-label">Stimmung heute</div><div class="mood-effect" id="moodEffect">Wähle deine Stimmung</div></div>
+    <div class="mood-btns-sm" id="moodBtns"></div>
+  </div>
+
+  <div class="warn-banner" id="warnBanner"><span style="font-size:16px;animation:blink 1s infinite">⏰</span><div><div style="font-size:10px;font-weight:700;color:#fcd34d">ERINNERUNG</div><div id="warnTxt" style="font-size:9px;color:var(--t2)"></div></div></div>
+  <div class="pen-banner" id="penBanner"><span style="font-size:15px">💀</span><div><div style="font-size:10px;font-weight:700;color:#fca5a5">PENALTY AKTIV</div><div id="penBannerTxt" style="font-size:9px;color:var(--t2)"></div></div></div>
+
+  <div class="rival-banner" id="rivalBanner" style="display:none">
+    <div style="font-size:22px" id="rivalAvatarDisp">👹</div>
+    <div style="flex:1">
+      <div class="rival-vs">VS RIVAL</div>
+      <div style="font-size:12px;font-weight:700" id="rivalNameDisp">—</div>
+      <div style="font-size:10px;color:var(--t2)" id="rivalGapDisp">—</div>
+    </div>
+    <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700" id="rivalXPDisp" style="color:var(--r)">0 XP</div>
+  </div>
+
+  <div class="mnav">
+    <button class="mnb on" data-id="daily" onclick="msw('daily',this)">⚔ Daily</button>
+    <button class="mnb" data-id="supps" onclick="msw('supps',this)">💊 Supps</button>
+    <button class="mnb" data-id="special" onclick="msw('special',this)">★ Special</button>
+    <button class="mnb" data-id="boss" onclick="msw('boss',this)">💀 Boss</button>
+    <button class="mnb" data-id="dungeon" onclick="msw('dungeon',this)">🏰 Dungeon</button>
+    <button class="mnb" data-id="inventory" onclick="msw('inventory',this)">🎒 Inventar</button>
+    <button class="mnb" data-id="skills" onclick="msw('skills',this)">🧬 Skills</button>
+    <button class="mnb" data-id="learned" onclick="msw('learned',this)">📖 Erlernt</button>
+    <button class="mnb" data-id="body" onclick="msw('body',this)">💪 Körper</button>
+    <button class="mnb" data-id="goals" onclick="msw('goals',this)">🎯 Ziele</button>
+    <button class="mnb" data-id="templates" onclick="msw('templates',this)">📋 Vorlagen</button>
+    <button class="mnb" data-id="season" onclick="msw('season',this)">🏆 Season</button>
+    <button class="mnb" data-id="streaks" onclick="msw('streaks',this)">🔥 Streaks</button>
+    <button class="mnb" data-id="stats" onclick="msw('stats',this)">📊 Stats</button>
+  </div>
+
+  <!-- DAILY -->
+  <div class="mpanel on" id="mp-daily">
+    <div class="topbar">
+      <span id="dateDisp" style="color:var(--text);font-weight:700;font-size:11px"></span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="timer" id="timerEl">--:--:--</span>
+        <button class="dayend-btn" onclick="dayEnd()">Tag beenden</button>
+      </div>
+    </div>
+    <div class="progw">
+      <div class="prog-t"><div class="prog-f" id="progF" style="width:0%"></div></div>
+      <div class="prog-txt"><strong id="doneN">0</strong>/<span id="totN">0</span> <span id="swapInfo" style="color:var(--t3);font-size:9px"></span></div>
+    </div>
+    <div id="questSections"></div>
+    <div class="addform">
+      <div class="addlbl">+ Eigene Quest</div>
+      <div class="frow">
+        <input class="fi" id="nqN" placeholder="Quest-Name..."/>
+        <select class="fs" id="nqC"><option value="sport">💪 Sport</option><option value="habit">🌿 Gewohnheit</option><option value="learn">📚 Lernen</option><option value="good">✨ Gute Tat</option><option value="custom">⭐ Custom</option></select>
+      </div>
+      <div class="frow">
+        <input class="fi" id="nqXP" type="number" placeholder="XP" value="50" style="max-width:65px"/>
+        <input class="fi" id="nqD" placeholder="Beschreibung (optional)"/>
+        <button class="addbtn" onclick="addCQ()">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUPPLEMENTS -->
+  <div class="mpanel" id="mp-supps">
+    <div class="supp-header">
+      <div class="supp-header-top">
+        <div class="supp-title">💊 SUPPLEMENT STACK</div>
+        <div style="font-size:10px;color:var(--t2)" id="suppDateLbl"></div>
+      </div>
+      <div class="supp-prog-row">
+        <div class="supp-prog-track"><div class="supp-prog-fill" id="suppProgFill" style="width:0%"></div></div>
+        <div class="supp-prog-txt"><span id="suppDoneN">0</span>/<span id="suppTotN">0</span> genommen</div>
+      </div>
+    </div>
+    <div id="suppBoostBanner" style="display:none" class="supp-boost-banner">
+      <span class="supp-boost-icon">⚡</span>
+      <div><div style="font-size:12px;font-weight:700;color:var(--c)">SUPPLEMENT BOOST AKTIV</div><div style="font-size:10px;color:var(--t2)">+<span id="suppBoostAmt">25</span>% XP auf alle Quests heute!</div></div>
+    </div>
+    <div class="sechd" style="margin-top:9px"><div class="sectitle">Dein Stack</div></div>
+    <div id="suppList"></div>
+    <div class="addform">
+      <div class="addlbl">+ Supplement hinzufügen</div>
+      <div class="frow">
+        <input class="fi" id="snName" placeholder="Name (z.B. Kreatin, Omega-3...)"/>
+        <input class="fi" id="snDose" placeholder="Dosis (z.B. 5g)" style="max-width:90px"/>
+      </div>
+      <div class="frow">
+        <select class="fs" id="snTime"><option value="morning">☀ Morgens</option><option value="afternoon">🌤 Mittags</option><option value="evening">🌙 Abends</option><option value="anytime">⏰ Jederzeit</option></select>
+        <input class="fi" id="snNote" placeholder="Notiz (optional)"/>
+        <button class="addbtn" onclick="addSupp()">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPECIAL -->
+  <div class="mpanel" id="mp-special">
+    <div class="sechd"><div class="sectitle">Special Quests</div></div>
+    <div id="specialList"></div>
+    <div class="addform" style="margin-top:10px">
+      <div class="addlbl">+ Special Quest</div>
+      <div class="frow"><input class="fi" id="spN" placeholder="Name..."/><input class="fi" id="spXP" type="number" placeholder="XP" value="300" style="max-width:65px"/></div>
+      <div class="frow"><input class="fi" id="spD" placeholder="Beschreibung..."/><button class="addbtn" onclick="addSp()">+ Add</button></div>
+    </div>
+  </div>
+
+  <!-- BOSS -->
+  <div class="mpanel" id="mp-boss">
+    <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:6px;padding:8px 11px;margin-bottom:10px;font-size:10px;color:#fca5a5;">⚠ Boss-Quests: 48h Zeitlimit, doppelte XP.</div>
+    <div id="bossList"></div>
+    <div class="addform" style="margin-top:10px">
+      <div class="addlbl">+ Boss Quest</div>
+      <div class="frow"><input class="fi" id="bqN" placeholder="Boss Quest Name..."/><input class="fi" id="bqXP" type="number" placeholder="XP" value="500" style="max-width:65px"/></div>
+      <div class="frow"><input class="fi" id="bqD" placeholder="Herausforderung..."/><button class="addbtn" style="background:linear-gradient(135deg,var(--r),#7f1d1d)" onclick="addBQ()">+ Boss</button></div>
+    </div>
+  </div>
+
+  <!-- DUNGEON -->
+  <div class="mpanel" id="mp-dungeon">
+    <div class="sechd"><div class="sectitle">Dungeon Modus</div></div>
+    <div id="dungeonContent"></div>
+  </div>
+
+  <!-- INVENTORY -->
+  <div class="mpanel" id="mp-inventory">
+    <div class="sechd"><div class="sectitle">Inventar & Items</div></div>
+    <div style="font-size:10px;color:var(--t2);margin-bottom:10px;">Kaufe Items mit XP und setze sie strategisch ein. Dein XP-Guthaben: <span style="color:var(--gold);font-family:'Orbitron',monospace" id="invXPDisp">0</span></div>
+    <div id="activeItemBanner" style="display:none" class="active-item-banner"><span style="font-size:18px" id="activeItemIcon">⚡</span><div><div style="font-size:11px;font-weight:700;color:var(--g)" id="activeItemName">Item aktiv</div><div style="font-size:9px;color:var(--t2)" id="activeItemDesc">Effekt läuft</div></div></div>
+    <div class="inv-grid" id="invGrid"></div>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="mpanel" id="mp-skills">
+    <div class="sechd"><div class="sectitle">Fähigkeiten-Baum</div></div>
+    <div style="font-size:10px;color:var(--t2);margin-bottom:9px;">XP investieren, Skills freischalten. Freigeschaltete Skills unter "📖 Erlernt".</div>
+    <div class="skills-grid" id="skillsGrid"></div>
+  </div>
+
+  <!-- LEARNED -->
+  <div class="mpanel" id="mp-learned">
+    <div class="sechd"><div class="sectitle">Erlernte Fähigkeiten</div></div>
+    <div class="learned-header"><div class="learned-count" id="learnedCount">0</div><div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--t2);margin-top:2px">Skills erlernt</div></div>
+    <div id="learnedContent"></div>
+  </div>
+
+  <!-- BODY -->
+  <div class="mpanel" id="mp-body">
+    <div class="body-tabs">
+      <button class="btab on" onclick="bsw('muscles',this)">Muskeln</button>
+      <button class="btab" onclick="bsw('cardio',this)">Cardio</button>
+      <button class="btab" onclick="bsw('measures',this)">Maße</button>
+    </div>
+    <div class="bpanel on" id="bp-muscles">
+      <div class="blayout">
+        <div class="fig-col">
+          <div class="blbl">Muskelstatus</div>
+          <svg id="musclesvg" viewBox="0 0 220 420" width="182" height="347" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="110" cy="38" rx="26" ry="30" fill="#1e1830" stroke="#3b3060" stroke-width="1.5"/>
+            <rect x="100" y="64" width="20" height="18" rx="4" fill="#1e1830" stroke="#3b3060" stroke-width="1.5"/>
+            <path d="M68 82 Q60 88 58 130 Q56 155 62 175 Q70 185 110 187 Q150 185 158 175 Q164 155 162 130 Q160 88 152 82 Z" fill="#1e1830" stroke="#3b3060" stroke-width="1.5"/>
+            <g id="m_chest"><path d="M80 92 Q88 88 105 90 Q108 105 105 120 Q94 125 80 118 Q73 110 80 92Z" fill="#1a1428"/><path d="M140 92 Q132 88 115 90 Q112 105 115 120 Q126 125 140 118 Q147 110 140 92Z" fill="#1a1428"/></g>
+            <g id="m_abs"><rect x="95" y="124" width="14" height="11" rx="3" fill="#1a1428"/><rect x="111" y="124" width="14" height="11" rx="3" fill="#1a1428"/><rect x="95" y="138" width="14" height="11" rx="3" fill="#1a1428"/><rect x="111" y="138" width="14" height="11" rx="3" fill="#1a1428"/><rect x="95" y="152" width="14" height="11" rx="3" fill="#1a1428"/><rect x="111" y="152" width="14" height="11" rx="3" fill="#1a1428"/></g>
+            <g id="m_shoulders"><ellipse cx="57" cy="92" rx="16" ry="18" fill="#1a1428"/><ellipse cx="163" cy="92" rx="16" ry="18" fill="#1a1428"/></g>
+            <g id="m_arms"><path d="M42 110 Q35 120 34 140 Q34 155 40 160 Q48 162 55 155 Q62 148 60 130 Q58 112 50 108 Z" fill="#1a1428"/><path d="M178 110 Q185 120 186 140 Q186 155 180 160 Q172 162 165 155 Q158 148 160 130 Q162 112 170 108 Z" fill="#1a1428"/></g>
+            <path d="M38 162 Q33 172 34 192 Q36 205 42 208 Q50 210 55 204 Q60 196 58 176 Q56 162 48 160 Z" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <path d="M182 162 Q187 172 186 192 Q184 205 178 208 Q170 210 165 204 Q160 196 162 176 Q164 162 172 160 Z" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <ellipse cx="44" cy="214" rx="10" ry="13" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <ellipse cx="176" cy="214" rx="10" ry="13" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <g id="m_back"><path d="M62 90 Q55 100 58 130 Q60 145 68 150 Q74 138 74 110 Q74 96 68 88Z" fill="#1a1428"/><path d="M158 90 Q165 100 162 130 Q160 145 152 150 Q146 138 146 110 Q146 96 152 88Z" fill="#1a1428"/></g>
+            <path d="M72 178 Q80 188 110 190 Q140 188 148 178 L145 195 Q138 200 110 202 Q82 200 75 195Z" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <g id="m_legs"><path d="M75 198 Q66 205 62 235 Q59 260 63 280 Q68 295 80 298 Q92 298 98 282 Q103 262 100 232 Q97 208 90 200 Z" fill="#1a1428"/><path d="M145 198 Q154 205 158 235 Q161 260 157 280 Q152 295 140 298 Q128 298 122 282 Q117 262 120 232 Q123 208 130 200 Z" fill="#1a1428"/></g>
+            <g id="m_calves"><path d="M65 302 Q58 315 58 340 Q59 360 66 368 Q74 375 82 370 Q90 362 90 340 Q90 316 84 302 Z" fill="#1a1428"/><path d="M155 302 Q162 315 162 340 Q161 360 154 368 Q146 375 138 370 Q130 362 130 340 Q130 316 136 302 Z" fill="#1a1428"/></g>
+            <ellipse cx="74" cy="378" rx="14" ry="8" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <ellipse cx="146" cy="378" rx="14" ry="8" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <g id="m_traps"><path d="M97 70 Q85 75 72 85 Q80 90 95 88 Q104 82 105 74Z" fill="#1a1428"/><path d="M123 70 Q135 75 148 85 Q140 90 125 88 Q116 82 115 74Z" fill="#1a1428"/></g>
+            <line x1="110" y1="82" x2="110" y2="186" stroke="rgba(255,255,255,.05)" stroke-width="1" stroke-dasharray="3,4"/>
+          </svg>
+          <div class="bglvl" id="mGlvl">Untrainiert</div>
+          <div class="bxpc"><div class="bxpv" style="color:var(--gold)" id="mXP">0</div><div class="bxpl">Muskel XP</div></div>
+        </div>
+        <div class="ctrl-col" id="mList"></div>
+      </div>
+    </div>
+    <div class="bpanel" id="bp-cardio">
+      <div class="blayout">
+        <div class="fig-col">
+          <div class="blbl">Cardio-Status</div>
+          <svg id="cardiosvg" viewBox="0 0 220 420" width="182" height="347" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="110" cy="38" rx="26" ry="30" fill="#1e1830" stroke="#3b3060" stroke-width="1.5"/>
+            <rect x="100" y="64" width="20" height="18" rx="4" fill="#1e1830" stroke="#3b3060" stroke-width="1.5"/>
+            <path d="M68 82 Q60 88 58 130 Q56 155 62 175 Q70 185 110 187 Q150 185 158 175 Q164 155 162 130 Q160 88 152 82 Z" fill="#1e1830" stroke="#3b3060" stroke-width="1.5"/>
+            <g id="c_heart"><path d="M85 108 Q88 95 97 95 Q105 95 110 104 Q115 95 123 95 Q132 95 135 108 Q135 118 110 132 Q85 118 85 108Z" fill="#1a1020"/></g>
+            <g id="c_lungs"><path d="M72 92 Q64 100 63 125 Q63 145 70 155 Q78 160 85 152 Q90 140 88 115 Q86 98 79 88Z" fill="#1a1020"/><path d="M148 92 Q156 100 157 125 Q157 145 150 155 Q142 160 135 152 Q130 140 132 115 Q134 98 141 88Z" fill="#1a1020"/></g>
+            <g id="c_core"><path d="M70 156 Q80 165 110 167 Q140 165 150 156 Q148 172 110 174 Q72 172 70 156Z" fill="#1a1020"/></g>
+            <path d="M38 162 Q33 172 34 192 Q36 205 42 208 Q50 210 55 204 Q60 196 58 176 Q56 162 48 160 Z" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <path d="M182 162 Q187 172 186 192 Q184 205 178 208 Q170 210 165 204 Q160 196 162 176 Q164 162 172 160 Z" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <ellipse cx="44" cy="214" rx="10" ry="13" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <ellipse cx="176" cy="214" rx="10" ry="13" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <ellipse cx="57" cy="92" rx="16" ry="18" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <ellipse cx="163" cy="92" rx="16" ry="18" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <path d="M42 110 Q35 120 34 140 Q34 155 40 160 Q48 162 55 155 Q62 148 60 130 Q58 112 50 108 Z" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <path d="M178 110 Q185 120 186 140 Q186 155 180 160 Q172 162 165 155 Q158 148 160 130 Q162 112 170 108 Z" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <path d="M72 178 Q80 188 110 190 Q140 188 148 178 L145 195 Q138 200 110 202 Q82 200 75 195Z" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <g id="c_legs"><path d="M75 198 Q66 205 62 235 Q59 260 63 280 Q68 295 80 298 Q92 298 98 282 Q103 262 100 232 Q97 208 90 200 Z" fill="#1a1020"/><path d="M145 198 Q154 205 158 235 Q161 260 157 280 Q152 295 140 298 Q128 298 122 282 Q117 262 120 232 Q123 208 130 200 Z" fill="#1a1020"/><path d="M65 302 Q58 315 58 340 Q59 360 66 368 Q74 375 82 370 Q90 362 90 340 Q90 316 84 302 Z" fill="#1a1020"/><path d="M155 302 Q162 315 162 340 Q161 360 154 368 Q146 375 138 370 Q130 362 130 340 Q130 316 136 302 Z" fill="#1a1020"/></g>
+            <ellipse cx="74" cy="378" rx="14" ry="8" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <ellipse cx="146" cy="378" rx="14" ry="8" fill="#1e1830" stroke="#3b3060" stroke-width="1"/>
+            <line x1="110" y1="82" x2="110" y2="186" stroke="rgba(255,255,255,.05)" stroke-width="1" stroke-dasharray="3,4"/>
+          </svg>
+          <div class="bglvl" id="cGlvl">Keine Ausdauer</div>
+          <div class="bxpc"><div class="bxpv" style="color:var(--c)" id="cXP">0</div><div class="bxpl">Cardio XP</div></div>
+        </div>
+        <div class="ctrl-col" id="cList"></div>
+      </div>
+    </div>
+    <div class="bpanel" id="bp-measures">
+      <div class="sechd" style="margin-bottom:9px"><div class="sectitle">Körpermaße</div></div>
+      <div class="measure-grid" id="measureGrid"></div>
+      <div class="addform">
+        <div class="addlbl">+ Maß aktualisieren</div>
+        <div class="frow">
+          <select class="fs" id="mKey"><option value="weight">Gewicht (kg)</option><option value="bodyfat">Körperfett (%)</option><option value="biceps">Bizeps (cm)</option><option value="waist">Taille (cm)</option><option value="chest_m">Brust (cm)</option><option value="height">Größe (cm)</option></select>
+          <input class="fi" id="mVal" type="number" placeholder="Wert" step="0.1" style="max-width:80px"/>
+          <button class="addbtn" onclick="saveMeasure()">Speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GOALS -->
+  <div class="mpanel" id="mp-goals">
+    <div class="sechd"><div class="sectitle">Persönliche Ziele</div></div>
+    <div id="goalsList"></div>
+    <div class="addform">
+      <div class="addlbl">+ Neues Ziel</div>
+      <div class="frow"><input class="fi" id="gnName" placeholder="Ziel-Name..."/><input class="fi" id="gnTarget" type="number" placeholder="Zielwert" style="max-width:70px"/><input class="fi" id="gnUnit" placeholder="Einheit" style="max-width:65px"/></div>
+      <div class="frow"><input class="fi" id="gnCurrent" type="number" placeholder="Aktueller Wert"/><input class="fi" id="gnDate" type="date"/><button class="addbtn" onclick="addGoal()">+ Add</button></div>
+    </div>
+  </div>
+
+  <!-- TEMPLATES -->
+  <div class="mpanel" id="mp-templates">
+    <div class="sechd"><div class="sectitle">Quest-Vorlagen</div></div>
+    <div style="font-size:10px;color:var(--t2);margin-bottom:10px;">Speichere aktuelle Quests als Vorlage oder lade eine Vorlage als neuen Tagesplan.</div>
+    <div id="templatesList"></div>
+    <div class="addform">
+      <div class="addlbl">+ Aktuelle Quests als Vorlage speichern</div>
+      <div class="frow">
+        <input class="fi" id="tplName" placeholder="Vorlagen-Name (z.B. Gym-Tag, Rest-Day...)"/>
+        <button class="addbtn" onclick="saveTemplate()">Speichern</button>
+      </div>
+    </div>
+    <div style="margin-top:14px"><div class="sechd"><div class="sectitle">Wiederkehrende Quests</div></div>
+    <div style="font-size:10px;color:var(--t2);margin-bottom:9px;">Diese Quests erscheinen automatisch an bestimmten Wochentagen.</div>
+    <div id="recurList"></div>
+    <div class="addform">
+      <div class="addlbl">+ Wiederkehrende Quest</div>
+      <div class="frow">
+        <input class="fi" id="rqName" placeholder="Quest-Name..."/>
+        <select class="fs" id="rqCat"><option value="sport">💪 Sport</option><option value="habit">🌿 Gewohnheit</option><option value="learn">📚 Lernen</option><option value="good">✨ Gute Tat</option><option value="custom">⭐ Custom</option></select>
+        <input class="fi" id="rqXP" type="number" value="50" style="max-width:60px"/>
+      </div>
+      <div style="display:flex;gap:4px;margin-bottom:6px" id="rqDaysRow"></div>
+      <button class="addbtn" onclick="addRecurring()">+ Hinzufügen</button>
+    </div></div>
+  </div>
+
+  <!-- SEASON -->
+  <div class="mpanel" id="mp-season">
+    <div class="sechd"><div class="sectitle">Season & Prestige</div></div>
+    <div id="seasonContent"></div>
+    <div style="margin-top:14px"><div class="sechd"><div class="sectitle">Rival System</div></div>
+    <div id="rivalContent"></div>
+    <div class="addform">
+      <div class="addlbl">Rival bearbeiten</div>
+      <div class="frow">
+        <input class="fi" id="rivalEditInp" placeholder="Rival-Name..."/>
+        <button class="addbtn" onclick="setRival()">Setzen</button>
+        <button class="addbtn" style="background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.3)" onclick="removeRival()">Entfernen</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- STREAKS -->
+  <div class="mpanel" id="mp-streaks">
+    <div class="sechd"><div class="sectitle">Streak Übersicht</div></div>
+    <div class="skgrid" id="skGrid"></div>
+    <div class="wreport" id="weeklyReport"></div>
+    <div class="sechd" style="margin-top:5px"><div class="sectitle">Belohnungen</div></div>
+    <div id="giftList"></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="mpanel" id="mp-stats">
+    <div class="sechd"><div class="sectitle">Statistiken</div></div>
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="chart-wrap"><div class="chart-title">XP VERLAUF</div><canvas id="xpChart" height="85"></canvas></div>
+    <div class="chart-wrap"><div class="chart-title">QUEST KATEGORIEN</div><div class="pie-wrap"><canvas id="pieChart" width="100" height="100"></canvas><div class="pie-legend" id="pieLegend"></div></div></div>
+    <div class="heatmap-wrap"><div class="chart-title">AKTIVITÄTS-HEATMAP</div><div id="heatmapGrid"></div></div>
+    <!-- INSIGHTS -->
+    <div class="sechd" style="margin-top:5px"><div class="sectitle">KI Analyse & Einblicke</div></div>
+    <div id="insightsContent"></div>
+    <div class="sechd" style="margin-top:5px"><div class="sectitle">Rang-Roadmap</div></div>
+    <div class="rankroad" id="rankRoad"></div>
+    <div style="margin-top:10px"><div class="sechd"><div class="sectitle">Titel</div></div><div id="titlesGrid" style="display:flex;gap:5px;flex-wrap:wrap;"></div></div>
+    <div style="margin-top:10px"><div class="sechd"><div class="sectitle">Export / Import</div></div>
+      <div class="export-btns">
+        <button class="exp-btn" onclick="exportData()">⬇ Export JSON</button>
+        <button class="imp-btn" onclick="document.getElementById('impFile').click()">⬆ Import JSON</button>
+        <input type="file" id="impFile" accept=".json" style="display:none" onchange="importData(event)"/>
+        <button style="flex:1;min-width:90px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.18);border-radius:4px;padding:7px;color:#fca5a5;font-size:10px;cursor:pointer;font-family:'Rajdhani',sans-serif;" onclick="resetAll()">⚠ Reset</button>
+      </div>
+      <div class="export-btns" style="margin-top:6px">
+        <button class="exp-btn" onclick="pushCloud(true)">☁ Jetzt synchronisieren</button>
+        <button class="imp-btn" onclick="logout()">⏻ Abmelden</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTE MODAL -->
+<div class="note-modal" id="noteModal">
+  <div class="note-box">
+    <div class="note-title">NOTIZ / BEWERTUNG</div>
+    <textarea class="note-ta" id="noteTA" placeholder="Was hast du gemacht?..."></textarea>
+    <div style="margin-top:6px"><div style="font-size:9px;color:var(--t2);margin-bottom:4px">Schwierigkeit:</div>
+    <div class="diff-btns"><button class="dbtn easy" id="dEasy" onclick="setDiff('easy')">⭐ Leicht</button><button class="dbtn medium" id="dMed" onclick="setDiff('medium')">⭐⭐ Mittel</button><button class="dbtn hard" id="dHard" onclick="setDiff('hard')">⭐⭐⭐ Schwer</button></div></div>
+    <div class="note-btns"><button class="note-save" onclick="saveNote()">SPEICHERN</button><button class="note-cancel" onclick="clov('noteModal')">ABBRECHEN</button></div>
+  </div>
+</div>
+
+<!-- REWARD OVERLAY -->
+<div class="overlay" id="rwOv">
+  <div class="ovbox">
+    <div style="font-size:28px;margin-bottom:4px" id="rwIcon">⭐</div>
+    <div class="ovtitle" id="rwTitle">QUEST ABGESCHLOSSEN</div>
+    <div class="ovxp" id="rwXP">+50 XP</div>
+    <div style="font-size:9px;color:var(--t2);margin-bottom:2px" id="rwMsg"></div>
+    <div style="font-size:9px;color:var(--g)" id="rwBonus"></div>
+    <button class="ovcls" onclick="clov('rwOv')">WEITER</button>
+  </div>
+</div>
+
+<!-- PENALTY OVERLAY -->
+<div class="overlay" id="penOv">
+  <div class="penbox">
+    <div class="penbig">⚠</div>
+    <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:900;color:#fca5a5;margin-bottom:5px">PENALTY</div>
+    <div style="font-size:10px;color:#fca5a5;line-height:1.5;margin-bottom:5px" id="penMsg"></div>
+    <div style="font-size:9px;color:var(--t2);margin-bottom:9px" id="penDbf"></div>
+    <button class="pencls" onclick="clov('penOv')">AKZEPTIEREN</button>
+  </div>
+</div>
+
+<!-- RANK UP -->
+<div class="overlay" id="rankupOv">
+  <div class="rankup-box">
+    <div style="font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;color:var(--gold);margin-bottom:5px">RANG AUFSTIEG!</div>
+    <div class="rankup-r" id="rankupR">S</div>
+    <div style="font-size:11px;color:var(--t2);margin-top:5px" id="rankupSub"></div>
+    <button class="ovcls" style="margin-top:14px;background:linear-gradient(135deg,var(--gold),var(--r))" onclick="clov('rankupOv')">ANNEHMEN</button>
+  </div>
+</div>
+
+<!-- TITLE OVERLAY -->
+<div class="overlay" id="titleOv">
+  <div class="title-ovbox">
+    <div style="font-size:8px;letter-spacing:3px;color:var(--c);margin-bottom:6px">NEUER TITEL</div>
+    <div style="font-size:32px;margin-bottom:6px" id="titleIcon">🏆</div>
+    <div style="font-family:'Orbitron',monospace;font-size:13px;font-weight:900;margin-bottom:4px" id="titleName"></div>
+    <div style="font-size:9px;color:var(--t2)" id="titleDesc"></div>
+    <button class="ovcls" style="margin-top:11px" onclick="clov('titleOv')">ANNEHMEN</button>
+  </div>
+</div>
+
+<!-- SUPPLEMENT COMPLETE OVERLAY -->
+<div class="overlay" id="suppOv">
+  <div class="supp-complete-box" style="position:relative">
+    <span class="supp-glow-anim">💊</span>
+    <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:900;color:var(--c);margin-bottom:5px">SUPPLEMENT BOOST!</div>
+    <div style="font-family:'Orbitron',monospace;font-size:28px;font-weight:900;color:var(--gold);margin:8px 0">+<span id="suppOvBoost">25</span>% XP</div>
+    <div style="font-size:10px;color:var(--t2);margin-bottom:5px">Alle Supplements genommen!</div>
+    <div style="font-size:10px;color:var(--c)">Dein Avatar leuchtet auf ✨</div>
+    <button class="ovcls" style="margin-top:12px;background:linear-gradient(135deg,var(--c),var(--p))" onclick="clov('suppOv')">AKTIVIERT</button>
+  </div>
+</div>
+
+<!-- PRESTIGE CONFIRM -->
+<div class="overlay" id="prestigeOv">
+  <div class="prestige-confirm-box">
+    <div style="font-size:40px;margin-bottom:8px">🔱</div>
+    <div style="font-family:'Orbitron',monospace;font-size:13px;font-weight:900;color:var(--r);margin-bottom:6px">PRESTIGE</div>
+    <div style="font-size:10px;color:var(--t2);line-height:1.5;margin-bottom:12px">XP wird auf 0 zurückgesetzt. Du startest neu, behältst aber einen permanenten Bonus und einen Prestige-Stern.</div>
+    <div style="display:flex;gap:7px">
+      <button style="flex:1;background:linear-gradient(135deg,var(--r),#7f1d1d);border:none;border-radius:5px;padding:9px;color:#fff;font-family:'Orbitron',monospace;font-size:9px;font-weight:700;letter-spacing:1px;cursor:pointer" onclick="doPrestige()">PRESTIGE ⚡</button>
+      <button style="flex:1;background:rgba(255,255,255,.05);border:1px solid var(--pb);border-radius:5px;padding:9px;color:var(--t2);font-family:'Rajdhani',sans-serif;font-size:11px;cursor:pointer" onclick="clov('prestigeOv')">ABBRECHEN</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════
+const RANKS=[{r:'E',cls:'r-e',min:0,max:200,c:'#94a3b8'},{r:'D',cls:'r-d',min:200,max:600,c:'#22c55e'},{r:'C',cls:'r-c',min:600,max:1400,c:'#06b6d4'},{r:'B',cls:'r-b',min:1400,max:3000,c:'#a855f7'},{r:'A',cls:'r-a',min:3000,max:6000,c:'#f59e0b'},{r:'S',cls:'r-s',min:6000,max:999999,c:'#ef4444'}];
+const AVATARS=['⚔','🗡','🛡','🏹','🔮','💀','🌙','🔥','⚡','🐉','🦅','🌊'];
+const MUSCLE_GS=[{id:'chest',lbl:'Brust',svg:'m_chest',xpP:12},{id:'abs',lbl:'Bauch',svg:'m_abs',xpP:10},{id:'shoulders',lbl:'Schultern',svg:'m_shoulders',xpP:10},{id:'arms',lbl:'Arme',svg:'m_arms',xpP:11},{id:'back',lbl:'Rücken',svg:'m_back',xpP:13},{id:'traps',lbl:'Trapez',svg:'m_traps',xpP:9},{id:'legs',lbl:'Beine',svg:'m_legs',xpP:14},{id:'calves',lbl:'Waden',svg:'m_calves',xpP:8}];
+const CARDIO_GS=[{id:'c_heart',lbl:'Herz & Kreislauf',svg:'c_heart',icon:'❤',xpP:15,desc:'HIIT, Intervall'},{id:'c_lungs',lbl:'Lunge & Atmung',svg:'c_lungs',icon:'💨',xpP:12,desc:'Laufen, Radfahren'},{id:'c_core',lbl:'Core Ausdauer',svg:'c_core',icon:'🔥',xpP:10,desc:'Burpees, Plank'},{id:'c_legs',lbl:'Bein-Ausdauer',svg:'c_legs',icon:'🏃',xpP:13,desc:'Laufen, Treppe'}];
+const MEASURES_DEF=[{key:'weight',lbl:'Gewicht',unit:'kg',icon:'⚖'},{key:'bodyfat',lbl:'Körperfett',unit:'%',icon:'📊'},{key:'biceps',lbl:'Bizeps',unit:'cm',icon:'💪'},{key:'waist',lbl:'Taille',unit:'cm',icon:'📏'},{key:'chest_m',lbl:'Brust',unit:'cm',icon:'🫁'},{key:'height',lbl:'Größe',unit:'cm',icon:'📐'}];
+const QUEST_POOL=[
+  {name:'30 Min Laufen',cat:'sport',xp:70,desc:'Draußen oder Laufband'},{name:'Kraft-Training (45+ Min)',cat:'sport',xp:80,desc:'Compound-Übungen'},{name:'100 Liegestütze',cat:'sport',xp:60,desc:'Können aufgeteilt werden'},{name:'Schwimmen (30 Bahnen)',cat:'sport',xp:75,desc:'Schulter & Rücken'},{name:'Fahrrad (30+ Min)',cat:'sport',xp:65,desc:'Stadt, Wald, Ergometer'},{name:'Yoga / Stretching',cat:'sport',xp:50,desc:'Flexibilität & Recovery'},{name:'HIIT Workout (20 Min)',cat:'sport',xp:90,desc:'Hochintensität'},{name:'10.000 Schritte',cat:'sport',xp:65,desc:'Täglicher Spaziergang'},{name:'Klettern / Bouldern',cat:'sport',xp:85,desc:'Körper & Geist'},{name:'Kampfsport Training',cat:'sport',xp:90,desc:'Boxen, Judo, MMA'},{name:'Seilspringen (15 Min)',cat:'sport',xp:60,desc:'Ausdauer & Koordination'},{name:'Rückenübungen',cat:'sport',xp:55,desc:'Für gesunden Rücken'},
+  {name:'8 Gläser Wasser',cat:'habit',xp:30,desc:'Hydration ist Macht'},{name:'Vor Mitternacht schlafen',cat:'habit',xp:35,desc:'Schlaf ist Recovery'},{name:'Kein Fastfood',cat:'habit',xp:45,desc:'Dein Körper dankt dir'},{name:'10 Min meditieren',cat:'habit',xp:40,desc:'Geist schärfen'},{name:'Handy 2h weniger',cat:'habit',xp:50,desc:'Digital Detox'},{name:'Gesundes Frühstück',cat:'habit',xp:30,desc:'Keine Kohlenhydratbombe'},{name:'Zimmer aufräumen',cat:'habit',xp:35,desc:'Geordneter Raum'},{name:'Kein Alkohol',cat:'habit',xp:45,desc:'Sauber wie ein S-Rang Hunter'},{name:'Kein Zucker',cat:'habit',xp:55,desc:'Energie ohne Crash'},{name:'Tagebuch schreiben',cat:'habit',xp:40,desc:'5 Min Reflexion'},{name:'Kalt duschen',cat:'habit',xp:50,desc:'30 Sek. Eisdusche'},{name:'Vor 7 aufstehen',cat:'habit',xp:55,desc:'Stille des Morgens'},
+  {name:'30 Min Buch lesen',cat:'learn',xp:50,desc:'Wissen ist XP'},{name:'Online-Kurs Lektion',cat:'learn',xp:60,desc:'Weiterbildung'},{name:'Sprache üben (30 Min)',cat:'learn',xp:55,desc:'Duolingo, Babbel...'},{name:'Lern-Podcast hören',cat:'learn',xp:40,desc:'Wissen beim Spazieren'},{name:'TED Talk / Doku',cat:'learn',xp:45,desc:'Inspiration & Wissen'},{name:'Programmieren (1h)',cat:'learn',xp:70,desc:'Code ist die Zukunft'},{name:'Finanzwissen',cat:'learn',xp:55,desc:'Budget, Invest, Freiheit'},{name:'Neue Fähigkeit üben',cat:'learn',xp:60,desc:'Zeichnen, Musik...'},{name:'Flashcards (20 Min)',cat:'learn',xp:45,desc:'Spaced Repetition'},{name:'Wissenschaftl. Artikel',cat:'learn',xp:65,desc:'Welt verstehen'},
+  {name:'Jemandem aktiv helfen',cat:'good',xp:80,desc:'Ohne Gegenleistung'},{name:'Freund/Familie anrufen',cat:'good',xp:60,desc:'Verbindungen stärken'},{name:'Ehrliches Lob sagen',cat:'good',xp:40,desc:'Wertschätzung'},{name:'Umgebung aufräumen',cat:'good',xp:45,desc:'Welt etwas besser machen'},{name:'Etwas spenden',cat:'good',xp:70,desc:'Zeit, Geld oder Dinge'},{name:'Jemanden aufheitern',cat:'good',xp:50,desc:'Energie verteilen'},{name:'Ehrenamt',cat:'good',xp:100,desc:'Größte Wirkung'},{name:'Nachbarn helfen',cat:'good',xp:55,desc:'Einkaufen, tragen'},{name:'Tierheim unterstützen',cat:'good',xp:60,desc:'Pelzige Verbündete'},{name:'Alte Sachen spenden',cat:'good',xp:55,desc:'Minimalismus & Großzügigkeit'}
+];
+const BOSS_POOL=[{name:'5km laufen + 100 Liegestütze',xp:600,desc:'Alles in einer Session'},{name:'8h schlafen + vor 7 aufwachen',xp:400,desc:'Der schwerste Boss'},{name:'2h lernen + 1 Kapitel lesen',xp:500,desc:'Geist & Ausdauer'},{name:'3 verschiedenen Menschen helfen',xp:550,desc:'Tag voller guter Taten'},{name:'Kein Handy + kein Zucker + kein Alkohol',xp:700,desc:'Dreifache Askese'},{name:'Ganzkörper-Training + gesunde Ernährung',xp:650,desc:'Körper komplett fordern'}];
+const SPECIAL_DEF=[{id:'sp1',name:'7-Tage Sport Streak',desc:'7 Tage hintereinander trainieren',xp:700,done:false},{id:'sp2',name:'Wissens-Dungeon',desc:'Ein Buch vollständig lesen',xp:400,done:false},{id:'sp3',name:'30 Gute Taten',desc:'30 gute Taten diesen Monat',xp:1000,done:false},{id:'sp4',name:'Digitaler Entzug',desc:'7 Tage täglich unter 2h Handy',xp:600,done:false},{id:'sp5',name:'S-Rang Körper',desc:'Alle Muskelgruppen auf 30+ Sessions',xp:1500,done:false}];
+const GIFTS=[{days:3,icon:'🎯',name:'3-Tage Krieger',desc:'+15% XP für 24h'},{days:7,icon:'🏅',name:'Wochensieger',desc:'Penalty Skip Token'},{days:14,icon:'💎',name:'Eiserner Wille',desc:'+25% XP für 3 Tage'},{days:30,icon:'👑',name:'Legendärer Jäger',desc:'Permanenter +5% XP Boost'},{days:60,icon:'🔱',name:'Unsterblicher Hunter',desc:'S-Rang Skin + Spezialtitel'},{days:100,icon:'⚡',name:'Göttlicher Hunter',desc:'Alle Boni + Legendärer Status'}];
+const SKILLS_DEF=[{id:'iron_will',icon:'🛡',name:'Eiserner Wille',desc:'1x/Woche Streak-Schutz.',effect:'+Streak-Schutz',cost:500},{id:'xp_boost',icon:'⚡',name:'XP-Verstärker',desc:'+10% XP dauerhaft.',effect:'+10% XP',cost:800},{id:'boss_hunter',icon:'💀',name:'Boss-Jäger',desc:'+20% XP auf Boss-Quests.',effect:'+20% Boss-XP',cost:600},{id:'swap_master',icon:'🔄',name:'Tausch-Meister',desc:'2 Tausche pro Tag.',effect:'+1 Swap/Tag',cost:400},{id:'dungeon_expert',icon:'🏰',name:'Dungeon-Experte',desc:'+30% Bonus-XP bei Dungeons.',effect:'+30% Dungeon-XP',cost:700},{id:'recovery',icon:'💊',name:'Regeneration',desc:'Penalties −50% XP.',effect:'-50% Penalty XP',cost:550},{id:'good_heart',icon:'💛',name:'Gutes Herz',desc:'+25% XP Gute-Tat-Quests.',effect:'+25% Gute-Tat-XP',cost:350},{id:'scholar',icon:'📖',name:'Gelehrter',desc:'+20% XP Lern-Quests.',effect:'+20% Lern-XP',cost:350},{id:'athlete',icon:'🏃',name:'Athlet',desc:'+15% XP Sport-Quests.',effect:'+15% Sport-XP',cost:400},{id:'night_owl',icon:'🌙',name:'Nacht-Eule',desc:'Deadline verlängert auf 01:00 Uhr.',effect:'+2h Deadline',cost:300}];
+const TITLES_DEF=[{id:'first_step',icon:'👣',name:'Erste Schritte',desc:'10 Quests',cond:s=>s.totalDone>=10},{id:'week_warrior',icon:'⚔',name:'Wochen-Krieger',desc:'7-Tage Streak',cond:s=>s.longest>=7},{id:'scholar_t',icon:'📚',name:'Gelehrter Hunter',desc:'20 Lern-Quests',cond:s=>(s.catStats&&s.catStats.learn||0)>=20},{id:'good_soul',icon:'✨',name:'Gute Seele',desc:'15 Gute-Tat-Quests',cond:s=>(s.catStats&&s.catStats.good||0)>=15},{id:'iron_body',icon:'💪',name:'Eisen-Körper',desc:'30 Sport-Quests',cond:s=>(s.catStats&&s.catStats.sport||0)>=30},{id:'century',icon:'💯',name:'Centurion',desc:'100 Quests',cond:s=>s.totalDone>=100},{id:'s_rank_t',icon:'👑',name:'S-Rang Aufsteiger',desc:'S-Rang erreicht',cond:s=>s.xp>=6000},{id:'dungeon_m',icon:'🏰',name:'Dungeon-Meister',desc:'10 Dungeon-Runs',cond:s=>(s.dungeonRuns||0)>=10},{id:'supplement_god',icon:'💊',name:'Supplement-König',desc:'30 Tage alle Supps genommen',cond:s=>(s.suppStreaks||0)>=30}];
+const INVENTORY_DEF=[{id:'xp_potion',icon:'🧪',name:'Doppel-XP Trank',desc:'Nächste Quest gibt 2x XP.',rarity:'common',cost:150,type:'xp_double',effect:'2x XP auf nächste Quest'},{id:'streak_shield',icon:'🛡',name:'Streak-Schild',desc:'Schützt einmalig vor Streak-Verlust.',rarity:'rare',cost:300,type:'streak_shield',effect:'Streak-Schutz 1x'},{id:'boss_ticket',icon:'🎫',name:'Boss-Ticket',desc:'Sofort einen neuen Boss-Quest beschwören.',rarity:'rare',cost:250,type:'boss_summon',effect:'Boss sofort erscheinen'},{id:'xp_bomb',icon:'💣',name:'XP-Bombe',desc:'+500 XP sofort.',rarity:'epic',cost:800,type:'instant_xp',effect:'+500 XP direkt'},{id:'time_freeze',icon:'⏸',name:'Zeit-Anhalter',desc:'Tag ohne Penalty beenden — auch mit offenen Quests.',rarity:'epic',cost:600,type:'time_freeze',effect:'Kein Penalty heute'},{id:'legendary_boost',icon:'👑',name:'Legendärer Boost',desc:'+50% XP für den gesamten heutigen Tag.',rarity:'legendary',cost:1200,type:'day_boost',effect:'+50% XP ganzer Tag'}];
+const MOOD_DATA=[{emoji:'😴',lbl:'Müde',effect:'Quest-XP -10%',xpMod:0.9},{emoji:'😐',lbl:'Neutral',effect:'Normaler Tag',xpMod:1.0},{emoji:'💪',lbl:'Motiviert',effect:'+10% XP',xpMod:1.1},{emoji:'🔥',lbl:'On Fire',effect:'+20% XP',xpMod:1.2},{emoji:'😤',lbl:'Kampfbereit',effect:'+15% XP, Boss erscheint',xpMod:1.15}];
+const CAT_ICONS={sport:'💪',habit:'🌿',learn:'📚',good:'✨',custom:'⭐'};
+const CAT_LABELS={sport:'Sport',habit:'Gewohnheit',learn:'Lernen',good:'Gute Tat',custom:'Custom'};
+const SEASON_DURATION_DAYS=30;
+const QUOTES=['\"Ich werde der stärkste Hunter der Welt.\" — Sung Jin-Woo','\"Die Schwachen sterben. Die Starken überleben.\"','\"Jedes Hindernis ist eine Gelegenheit zum Aufstieg.\"','\"Das System belohnt nur jene, die sich dem Schmerz stellen.\"','\"Stärke kommt nicht von außen — sie wird in dir geboren.\"','\"Ein Hunter, der aufgibt, war nie ein Hunter.\"','\"Levele weiter. Das System wartet nicht.\"','\"Der Dungeon fürchtet nur einen: denjenigen, der nie aufhört.\"','\"Deine täglichen Gewohnheiten formen deinen Rang.\"','\"S-Rang ist kein Ziel. Es ist ein Zustand des Geistes.\"'];
+const LS='sl_mega_v2';
+
+// ═══════════════════════════════════════
+// ☁ CLOUD SYNC KONFIGURATION
+// Trage hier deine Supabase-Daten ein.
+// Solange leer, speichert die App nur lokal.
+// ═══════════════════════════════════════
+const SUPABASE_URL = 'https://yeicscdbcyeivlgwdvif.supabase.co/rest/v1/';   
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InllaWNzY2RiY3llaXZsZ3dkdmlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1NzIwMDcsImV4cCI6MjEwMzE0ODAwN30.w2fn_3_UyYeHeHuiFWMirtxfIojZ7eO6IX_UqlO7PjI';  
+// ═══════════════════════════════════════
+
+let sb=null, sbUser=null, syncState='local', saveTimer=null, pendingSave=false, authTab='login';
+function cloudEnabled(){return !!(SUPABASE_URL&&SUPABASE_KEY);}
+
+function setSync(state,txt){
+  syncState=state;
+  const b=document.getElementById('syncBadge'),t=document.getElementById('syncTxt');
+  if(!b||!t)return;
+  b.className='sync-badge '+state;
+  t.textContent=txt;
+}
+function syncBadgeClick(){
+  if(!cloudEnabled()){setSync('local','NUR LOKAL');return;}
+  if(sbUser){pushCloud(true);}
+}
+
+// ── Supabase laden ──
+async function initCloud(){
+  if(!cloudEnabled()){setSync('local','LOKAL');return false;}
+  try{
+    const mod=await import('https://esm.sh/@supabase/supabase-js@2');
+    sb=mod.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+    const {data}=await sb.auth.getSession();
+    sbUser=data&&data.session?data.session.user:null;
+    return true;
+  }catch(e){
+    console.error('Supabase konnte nicht geladen werden',e);
+    setSync('offline','OFFLINE');
+    return false;
+  }
+}
+
+// ── Lokaler Cache (Fallback + Offline) ──
+async function localGet(){
+  try{ if(window.storage){const r=await window.storage.get(LS);if(r&&r.value)return r.value;} }catch(e){}
+  try{ return localStorage.getItem(LS); }catch(e){}
+  return null;
+}
+async function localSet(str){
+  try{ if(window.storage){await window.storage.set(LS,str);return;} }catch(e){}
+  try{ localStorage.setItem(LS,str); }catch(e){}
+}
+async function localDel(){
+  try{ if(window.storage){await window.storage.delete(LS);} }catch(e){}
+  try{ localStorage.removeItem(LS); }catch(e){}
+}
+
+// ── Cloud lesen / schreiben ──
+async function pullCloud(){
+  if(!sb||!sbUser)return null;
+  try{
+    const {data,error}=await sb.from('saves').select('data,updated_at').eq('user_id',sbUser.id).maybeSingle();
+    if(error)throw error;
+    return data?data.data:null;
+  }catch(e){console.error('Pull fehlgeschlagen',e);setSync('offline','OFFLINE');return null;}
+}
+async function pushCloud(force){
+  if(!sb||!sbUser){await localSet(JSON.stringify(S));return;}
+  setSync('saving','SPEICHERT');
+  try{
+    const {error}=await sb.from('saves').upsert({user_id:sbUser.id,data:S,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+    if(error)throw error;
+    await localSet(JSON.stringify(S));
+    setSync('synced','SYNCHRON');
+  }catch(e){
+    console.error('Push fehlgeschlagen',e);
+    await localSet(JSON.stringify(S));
+    setSync('offline','OFFLINE (lokal gesichert)');
+  }
+}
+
+// ── Auth UI ──
+function authMode(m){
+  authTab=m;
+  document.getElementById('atLogin').classList.toggle('on',m==='login');
+  document.getElementById('atSignup').classList.toggle('on',m==='signup');
+  document.getElementById('authLbl').textContent=m==='login'?'Willkommen zurück, Hunter':'Neuen Hunter registrieren';
+  document.getElementById('authBtn').textContent=m==='login'?'EINLOGGEN →':'REGISTRIEREN →';
+  document.getElementById('authPass').setAttribute('autocomplete',m==='login'?'current-password':'new-password');
+  authMsg('','info');
+}
+function authMsg(t,cls){const el=document.getElementById('authMsg');if(!el)return;el.textContent=t;el.className='auth-msg '+(cls||'info');}
+function showAuth(){document.getElementById('auth').classList.add('show');document.getElementById('ob').style.display='none';document.getElementById('app').style.display='none';}
+function hideAuth(){document.getElementById('auth').classList.remove('show');}
+
+async function authSubmit(){
+  const email=document.getElementById('authEmail').value.trim();
+  const pass=document.getElementById('authPass').value;
+  if(!email||!pass){authMsg('Bitte E-Mail und Passwort eingeben.','err');return;}
+  if(pass.length<6){authMsg('Passwort muss mindestens 6 Zeichen haben.','err');return;}
+  authMsg('Verbinde...','info');
+  try{
+    let res;
+    if(authTab==='signup'){
+      res=await sb.auth.signUp({email:email,password:pass});
+      if(res.error)throw res.error;
+      if(!res.data.session){authMsg('Fast geschafft — bestätige den Link in deiner E-Mail und logge dich dann ein.','ok');return;}
+    } else {
+      res=await sb.auth.signInWithPassword({email:email,password:pass});
+      if(res.error)throw res.error;
+    }
+    sbUser=res.data.user;
+    authMsg('Erfolgreich!','ok');
+    await bootWithCloud();
+  }catch(e){
+    const m=(e&&e.message)||'Unbekannter Fehler';
+    if(/Invalid login/i.test(m))authMsg('E-Mail oder Passwort falsch.','err');
+    else if(/already registered/i.test(m))authMsg('Diese E-Mail ist schon registriert — wechsle zu "Anmelden".','err');
+    else authMsg(m,'err');
+  }
+}
+async function logout(){
+  try{ if(sb)await sb.auth.signOut(); }catch(e){}
+  sbUser=null;await localDel();
+  S=freshState();showAuth();authMsg('Abgemeldet.','info');
+}
+async function useLocalOnly(){
+  hideAuth();setSync('local','NUR LOKAL');
+  const raw=await localGet();
+  S=raw?patchS(raw):freshState();
+  prevRank=getRank();
+  if(S.name)launchApp();
+  else{document.getElementById('ob').style.display='flex';document.getElementById('nameInp').focus();}
+}
+
+// ── Start nach erfolgreichem Login ──
+async function bootWithCloud(){
+  hideAuth();
+  setSync('saving','LÄDT');
+  const cloud=await pullCloud();
+  const localRaw=await localGet();
+  let chosen=null;
+  if(cloud&&localRaw){
+    // Neuere Version gewinnt
+    let local=null;try{local=JSON.parse(localRaw);}catch(e){}
+    const cT=cloud._savedAt||0, lT=(local&&local._savedAt)||0;
+    chosen = lT>cT ? local : cloud;
+  } else chosen = cloud || localRaw;
+  S=patchS(chosen||freshState());
+  prevRank=getRank();
+  setSync('synced','SYNCHRON');
+  if(S.name){launchApp();await pushCloud();}
+  else{document.getElementById('ob').style.display='flex';document.getElementById('nameInp').focus();}
+}
+
+// ═══ STATE ═══
+let S,prevRank=null,noteQID=null,noteDiff=null,dungeonIV=null,obStep=0,rqDaysSelected=[false,false,false,false,false,false,false];
+
+function freshState(){
+  return {
+    name:'',avatar:'⚔',theme:'',xp:0,
+    quests:[],lastQuestDate:null,
+    specials:JSON.parse(JSON.stringify(SPECIAL_DEF)),
+    bossQuests:[],supplements:[],suppDate:null,
+    history:[],xpHistory:[],
+    catStats:{sport:0,habit:0,learn:0,good:0,custom:0},
+    questTimeLog:[],streak:0,longest:0,totalDone:0,penalties:0,
+    swapsToday:0,lastSwapDate:null,
+    muscles:{},cardio:{},measures:{},measureHistory:{},
+    skills:SKILLS_DEF.map(function(s){return{id:s.id,unlocked:false,obtainedAt:null};}),
+    titles:TITLES_DEF.map(function(t){return{id:t.id,unlocked:false};}),
+    dungeonActive:false,dungeonStart:null,dungeonLimit:3600,dungeonRuns:0,
+    activeTitle:null,penaltySkip:0,goals:[],collapsedCats:{},
+    moodToday:null,moodDate:null,
+    inventory:INVENTORY_DEF.map(function(i){return{id:i.id,count:0};}),
+    activeItem:null,activeItemExpires:null,
+    seasonStart:Date.now(),seasonXP:0,seasonHistory:[],
+    prestige:0,prestigeBonus:0,rivalName:'',suppStreaks:0,
+    templates:[],recurringQuests:[],weeklyXP:[]
+  };
+}
+function patchS(raw){
+  // Parse if string
+  var parsed=null;
+  if(typeof raw==='string'){try{parsed=JSON.parse(raw);}catch(e){}}
+  else if(raw&&typeof raw==='object'){parsed=raw;}
+  if(!parsed||typeof parsed!=='object')parsed=freshState();
+  var fs=freshState();
+  // Fill missing keys
+  Object.keys(fs).forEach(function(k){
+    if(parsed[k]===undefined)parsed[k]=fs[k];
+  });
+  // Always rebuild titles/skills/inventory from DEFs (no functions stored)
+  parsed.titles=TITLES_DEF.map(function(def){
+    var e=(parsed.titles||[]).find(function(t){return t.id===def.id;});
+    return{id:def.id,unlocked:e?!!e.unlocked:false};
+  });
+  parsed.skills=SKILLS_DEF.map(function(def){
+    var e=(parsed.skills||[]).find(function(s){return s.id===def.id;});
+    return{id:def.id,unlocked:e?!!e.unlocked:false,obtainedAt:e?e.obtainedAt||null:null};
+  });
+  parsed.inventory=INVENTORY_DEF.map(function(def){
+    var e=(parsed.inventory||[]).find(function(i){return i.id===def.id;});
+    return{id:def.id,count:e?e.count||0:0};
+  });
+  if(!parsed.muscles)parsed.muscles={};
+  if(!parsed.cardio)parsed.cardio={};
+  MUSCLE_GS.forEach(function(g){if(typeof parsed.muscles[g.id]!=='number')parsed.muscles[g.id]=0;});
+  CARDIO_GS.forEach(function(g){if(typeof parsed.cardio[g.id]!=='number')parsed.cardio[g.id]=0;});
+  if(!Array.isArray(parsed.specials)||!parsed.specials.length)parsed.specials=JSON.parse(JSON.stringify(SPECIAL_DEF));
+  if(!Array.isArray(parsed.supplements))parsed.supplements=[];
+  if(!parsed.catStats)parsed.catStats={sport:0,habit:0,learn:0,good:0,custom:0};
+  return parsed;
+}
+function saveS(){
+  S._savedAt=Date.now();
+  localSet(JSON.stringify(S));
+  if(!sb||!sbUser)return;
+  pendingSave=true;
+  setSync('saving','SPEICHERT');
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(function(){pendingSave=false;pushCloud();},1200);
+}
+function today(){return new Date().toISOString().split('T')[0];}
+
+// ═══ HELPERS ═══
+function getRank(){for(let i=RANKS.length-1;i>=0;i--)if(S.xp>=RANKS[i].min)return RANKS[i];return RANKS[0];}
+function hasSkill(id){return S.skills&&S.skills.find(s=>s.id===id&&s.unlocked);}
+function getMoodMod(){if(S.moodDate===today()&&S.moodToday!==null)return MOOD_DATA[S.moodToday].xpMod;return 1.0;}
+function suppMod(){const done=S.supplements.filter(s=>s.done).length,tot=S.supplements.length;if(tot>0&&done===tot)return 1+(suppBoostPct()/100);return 1;}
+function suppBoostPct(){const cnt=S.supplements.length;if(cnt===0)return 0;if(cnt<=2)return 15;if(cnt<=4)return 25;return 35;}
+function isItemActive(type){return S.activeItem===type&&S.activeItemExpires&&Date.now()<S.activeItemExpires;}
+function getXPMult(cat){
+  let m=getMoodMod()*suppMod()*(1+S.prestigeBonus/100);
+  if(hasSkill('xp_boost'))m*=1.1;
+  if(cat==='good'&&hasSkill('good_heart'))m*=1.25;
+  if(cat==='learn'&&hasSkill('scholar'))m*=1.2;
+  if(cat==='sport'&&hasSkill('athlete'))m*=1.15;
+  if(S.streak>=7)m*=1.08;
+  if(isItemActive('day_boost'))m*=1.5;
+  if(isItemActive('xp_double'))m*=2;
+  return m;
+}
+function applyXP(base,cat){return Math.round(base*getXPMult(cat));}
+function catLbl(c){return(CAT_ICONS[c]||'')+(CAT_LABELS[c]||c);}
+
+// ═══ PARTICLES ═══
+function initParticles(){const c=document.getElementById('particles');for(let i=0;i<20;i++){const p=document.createElement('div');p.className='p-dot';p.style.cssText=`left:${Math.random()*100}%;animation-duration:${7+Math.random()*9}s;animation-delay:${Math.random()*7}s;--dx:${(Math.random()-.5)*160}px;`;c.appendChild(p);}}
+
+// ═══ THEME ═══
+function setTheme(t,el){document.body.className=t?'theme-'+t:'';S.theme=t;if(typeof el!=='string'){document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}}
+
+// ═══ ONBOARDING ═══
+function initAvatarGrid(){document.getElementById('avatarGrid').innerHTML=AVATARS.map((a,i)=>`<div class="av-btn ${i===0?'sel':''}" onclick="selectAvatar('${a}',this)">${a}</div>`).join('');}
+function selectAvatar(a,el){S.avatar=a;document.querySelectorAll('.av-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
+function obNext(step){
+  if(step===1){const n=document.getElementById('nameInp').value.trim();if(!n){document.getElementById('nameInp').style.borderColor='var(--r)';return;}S.name=n.toUpperCase();}
+  document.getElementById('ob'+obStep).classList.remove('active');obStep=step;
+  document.getElementById('ob'+obStep).classList.add('active');
+  document.querySelectorAll('.ob-pip').forEach((p,i)=>p.classList.toggle('on',i<=step));
+}
+function finishOnboard(){
+  const rn=document.getElementById('rivalInp').value.trim();if(rn)S.rivalName=rn.toUpperCase();
+  if(!S.quests||!S.quests.length)genQuests();
+  if(!S.bossQuests||!S.bossQuests.length)genBossQuest();
+  saveS();launchApp();
+}
+document.getElementById('nameInp').addEventListener('keydown',e=>{if(e.key==='Enter')obNext(1);});
+document.getElementById('authPass').addEventListener('keydown',e=>{if(e.key==='Enter')authSubmit();});
+document.getElementById('authEmail').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('authPass').focus();});
+function launchApp(){
+  if(!S.lastQuestDate||S.lastQuestDate!==today()){genQuests();S.lastQuestDate=today();}
+  if(!S.quests||!S.quests.length){genQuests();S.lastQuestDate=today();}
+  document.getElementById("ob").style.display="none";
+  document.getElementById("app").style.display="block";
+  document.getElementById("appTitle").textContent="QUEST SYSTEM · "+S.name;
+  var _ae2=document.getElementById("avatarEmoji");if(_ae2)_ae2.textContent=S.avatar||"⚔";
+  if(S.theme)document.body.className="theme-"+S.theme;
+  addRecurringToday();renderAll();startTimer();updateDate();setDailyQuote();startWarningCheck();
+}
+function setDailyQuote(){document.getElementById('quoteEl').textContent=QUOTES[new Date().getDate()%QUOTES.length];}
+
+// ═══ MOOD ═══
+function rendMood(){
+  document.getElementById('moodBtns').innerHTML=MOOD_DATA.map((m,i)=>`<button class="mb-sm ${S.moodDate===today()&&S.moodToday===i?'sel':''}" onclick="setMood(${i})" title="${m.lbl}">${m.emoji}</button>`).join('');
+  const ef=document.getElementById('moodEffect');
+  if(S.moodDate===today()&&S.moodToday!==null)ef.textContent=MOOD_DATA[S.moodToday].lbl+' — '+MOOD_DATA[S.moodToday].effect;
+  else ef.textContent='Wähle deine Stimmung für heute';
+}
+function setMood(i){S.moodToday=i;S.moodDate=today();if(i===4&&Math.random()<0.5)genBossQuest();saveS();rendMood();rendQuests();}
+
+// ═══ QUEST GENERATION ═══
+function genQuests(){
+  const sh=[...QUEST_POOL].sort(()=>Math.random()-.5);
+  const cats=['sport','habit','learn','good'];const picked=[];
+  cats.forEach(cat=>{const pool=sh.filter(q=>q.cat===cat);for(let i=0;i<2&&i<pool.length;i++){if(!picked.find(p=>p.name===pool[i].name))picked.push({...pool[i],id:'dq'+Date.now()+Math.random(),done:false,swapped:false,note:'',difficulty:null});}});
+  while(picked.length<8){const q=sh.find(qq=>!picked.find(p=>p.name===qq.name));if(!q)break;picked.push({...q,id:'dq'+Date.now()+Math.random(),done:false,swapped:false,note:'',difficulty:null});}
+  S.quests=picked;S.swapsToday=0;S.lastSwapDate=today();
+}
+function genBossQuest(){const boss=BOSS_POOL[Math.floor(Math.random()*BOSS_POOL.length)];S.bossQuests=[{...boss,id:'bq'+Date.now(),done:false,expires:Date.now()+48*3600*1000}];}
+
+function addRecurringToday(){
+  if(!S.recurringQuests||!S.recurringQuests.length)return;
+  const dayOfWeek=new Date().getDay();
+  S.recurringQuests.forEach(rq=>{
+    if(!rq.days[dayOfWeek])return;
+    if(S.quests.find(q=>q.name===rq.name))return;
+    S.quests.push({...rq,id:'rq'+Date.now()+Math.random(),done:false,swapped:false,note:'',difficulty:null,recurring:true});
+  });
+}
+
+// ═══ RIVAL ═══
+function updRival(){
+  const rb=document.getElementById('rivalBanner');
+  if(!S.rivalName){rb.style.display='none';return;}
+  rb.style.display='flex';
+  const rivalXP=Math.round(S.xp*1.12+200);
+  document.getElementById('rivalNameDisp').textContent=S.rivalName;
+  document.getElementById('rivalXPDisp').textContent=rivalXP+' XP';
+  document.getElementById('rivalXPDisp').style.color=rivalXP>S.xp?'var(--r)':'var(--g)';
+  const gap=Math.abs(rivalXP-S.xp);
+  document.getElementById('rivalGapDisp').textContent=rivalXP>S.xp?`${gap} XP hinter Rival`:`${gap} XP vor Rival`;
+}
+function setRival(){const n=document.getElementById('rivalEditInp').value.trim();if(!n)return;S.rivalName=n.toUpperCase();document.getElementById('rivalEditInp').value='';saveS();updRival();rendSeason();}
+function removeRival(){S.rivalName='';saveS();updRival();}
+
+// ═══ PROFILE ═══
+function updProfile(){
+  const rk=getRank();
+  if(prevRank&&prevRank.r!==rk.r)showRankUp(rk);
+  prevRank=rk;
+  const rb=document.getElementById('rankBadge');if(rb){rb.className='rbadge '+rk.cls;rb.textContent=rk.r;}
+  const lvl=Math.floor(S.xp/200)+1;
+  document.getElementById('pLvl').textContent=lvl;
+  document.getElementById('pName').textContent=S.name||'HUNTER';
+  document.getElementById('pRankName').textContent=rk.r+'-Rang';
+  const at=(S.titles||[]).find(t=>t.id===S.activeTitle&&t.unlocked);
+  const atDef=at?TITLES_DEF.find(d=>d.id===at.id):null;
+  document.getElementById('pTitleLbl').textContent=atDef?atDef.icon+' '+atDef.name:'';
+  const pd=document.getElementById('prestigeDisp');if(pd)pd.textContent=S.prestige>0?'★'.repeat(Math.min(S.prestige,5)):'';
+  const w=S.xp-rk.min,range=rk.max-rk.min;
+  document.getElementById('xpFill').style.width=Math.min(100,Math.round(w/range*100))+'%';
+  document.getElementById('xpCur').textContent=S.xp;
+  document.getElementById('xpNxt').textContent=rk.max===999999?'∞':rk.max;
+  document.getElementById('psStr').textContent=S.streak||0;
+  document.getElementById('psDone').textContent=S.totalDone||0;
+  document.getElementById('psPen').textContent=S.penalties||0;
+  var _ae=document.getElementById('avatarEmoji');if(_ae)_ae.textContent=S.avatar||'⚔';
+  // Supplement glow
+  const allSuppsDone=S.supplements.length>0&&S.supplements.every(s=>s.done);
+  const ad=document.getElementById('avatarDisp');
+  if(allSuppsDone){ad.classList.add('supplement-glow');document.getElementById('suppIndicator').style.display='flex';}
+  else{ad.classList.remove('supplement-glow');document.getElementById('suppIndicator').style.display='none';}
+  // Active item banner
+  if(S.activeItem&&S.activeItemExpires&&Date.now()<S.activeItemExpires){
+    const item=INVENTORY_DEF.find(i=>i.type===S.activeItem);
+    if(item){document.getElementById('activeItemBanner').style.display='flex';document.getElementById('activeItemIcon').textContent=item.icon;document.getElementById('activeItemName').textContent=item.name;document.getElementById('activeItemDesc').textContent=item.effect;}
+  } else {
+    document.getElementById('activeItemBanner').style.display='none';
+    if(S.activeItemExpires&&Date.now()>=S.activeItemExpires){S.activeItem=null;S.activeItemExpires=null;}
+  }
+  updRival();
+}
+
+// ═══ COLLAPSIBLE DAILY QUESTS ═══
+function rendQuests(){
+  const done=S.quests.filter(q=>q.done).length,tot=S.quests.length;
+  document.getElementById('doneN').textContent=done;
+  document.getElementById('totN').textContent=tot;
+  document.getElementById('progF').style.width=tot?Math.round(done/tot*100)+'%':'0%';
+  if(S.lastSwapDate!==today()){S.swapsToday=0;S.lastSwapDate=today();}
+  const maxSwaps=hasSkill('swap_master')?2:1;
+  const sl=maxSwaps-(S.swapsToday||0);
+  document.getElementById('swapInfo').textContent=`· ${sl} Tausch${sl!==1?'e':''} verbleibend`;
+  const cats=['sport','habit','learn','good','custom'];
+  let html='';
+  cats.forEach(cat=>{
+    const catQ=S.quests.filter(q=>q.cat===cat);if(!catQ.length)return;
+    const catDone=catQ.filter(q=>q.done).length;const isOpen=!S.collapsedCats[cat];
+    html+=`<div class="coll-wrap">
+      <div class="coll-hd ${isOpen?'open':''}" onclick="toggleCat('${cat}')">
+        <div class="coll-title"><span class="coll-cat-icon">${CAT_ICONS[cat]||'⭐'}</span>${CAT_LABELS[cat]||cat}</div>
+        <div class="coll-meta"><span class="coll-prog">${catDone}/${catQ.length}</span><span class="coll-arrow">▼</span></div>
+      </div>
+      <div class="coll-body ${isOpen?'':'closed'}" id="cat_${cat}">
+        ${catQ.map(q=>qCardHTML(q,sl)).join('')}
+      </div>
+    </div>`;
+  });
+  document.getElementById('questSections').innerHTML=html;
+}
+function toggleCat(cat){
+  S.collapsedCats[cat]=!S.collapsedCats[cat];
+  const hd=document.querySelector(`.coll-hd[onclick="toggleCat('${cat}')"]`);
+  const body=document.getElementById('cat_'+cat);
+  if(hd)hd.classList.toggle('open',!S.collapsedCats[cat]);
+  if(body)body.classList.toggle('closed',!!S.collapsedCats[cat]);
+  saveS();
+}
+function qCardHTML(q,sl){
+  const effXP=applyXP(q.xp,q.cat);
+  return`<div class="qcard ${q.cat} ${q.done?'done':''}" id="qc_${q.id}">
+    <div class="qchk" onclick="togQ('${q.id}')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,8 6,13 14,3"/></svg>
+    </div>
+    <div class="qinfo">
+      <div class="qname">${q.name}${q.recurring?'<span style="font-size:8px;color:var(--c);margin-left:5px">↻</span>':''}</div>
+      <div class="qmeta"><span class="qcat">${catLbl(q.cat)}</span><span class="qxp">+${effXP} XP${effXP!==q.xp?`<span style="color:var(--g);font-size:8px">(+${effXP-q.xp})</span>`:''}</span></div>
+      ${q.desc?`<div class="qdesc">${q.desc}</div>`:''}
+      ${q.note?`<div class="q-note">📝 ${q.note}</div>`:''}
+    </div>
+    <div class="qacts">
+      ${!q.done?`<button class="swapbtn" ${sl<=0||q.swapped?'disabled':''} onclick="swapQ('${q.id}')">⇄</button>`:''}
+      ${q.done?`<button class="unchkbtn" onclick="unchkQ('${q.id}')" title="Abhaken rückgängig">↩</button>`:''}
+      <button class="notebtn" onclick="openNote('${q.id}')" title="Notiz">📝</button>
+      <button class="delbtn" onclick="delQ('${q.id}')">✕</button>
+    </div>
+  </div>`;
+}
+
+function togQ(id){
+  const q=S.quests.find(q=>q.id===id);if(!q||q.done)return;
+  q.done=true;
+  const gained=applyXP(q.xp,q.cat);
+  S.xp+=gained;S.seasonXP=(S.seasonXP||0)+gained;S.totalDone++;
+  if(!S.catStats)S.catStats={};S.catStats[q.cat]=(S.catStats[q.cat]||0)+1;
+  // time log
+  S.questTimeLog=(S.questTimeLog||[]).concat({h:new Date().getHours(),date:today()});
+  if(S.questTimeLog.length>200)S.questTimeLog=S.questTimeLog.slice(-200);
+  // use xp_double item once
+  if(isItemActive('xp_double')){S.activeItem=null;S.activeItemExpires=null;}
+  checkTitles();saveS();rendQuests();updProfile();
+  showRw(q.name,gained,'✅ QUEST ABGESCHLOSSEN',`"${q.name}" erledigt!`,'',gained!==q.xp?`+${gained-q.xp} XP Bonus!`:'');
+}
+function unchkQ(id){
+  const q=S.quests.find(q=>q.id===id);if(!q||!q.done)return;
+  q.done=false;
+  const lost=applyXP(q.xp,q.cat);
+  S.xp=Math.max(0,S.xp-lost);S.totalDone=Math.max(0,S.totalDone-1);
+  if(S.catStats&&S.catStats[q.cat])S.catStats[q.cat]=Math.max(0,S.catStats[q.cat]-1);
+  saveS();rendQuests();updProfile();
+}
+function swapQ(id){
+  const maxS=hasSkill('swap_master')?2:1;if((S.swapsToday||0)>=maxS)return;
+  const idx=S.quests.findIndex(q=>q.id===id);if(idx<0)return;
+  const oc=S.quests[idx].cat;const used=S.quests.map(q=>q.name);
+  const pool=QUEST_POOL.filter(q=>!used.includes(q.name));
+  const src=pool.filter(q=>q.cat===oc).length>0?pool.filter(q=>q.cat===oc):pool;
+  if(!src.length)return;
+  const nq=src[Math.floor(Math.random()*src.length)];
+  S.quests[idx]={...nq,id:'dq'+Date.now(),done:false,swapped:true,note:'',difficulty:null};
+  S.swapsToday=(S.swapsToday||0)+1;S.lastSwapDate=today();
+  saveS();rendQuests();
+}
+function delQ(id){S.quests=S.quests.filter(q=>q.id!==id);saveS();rendQuests();}
+function addCQ(){
+  const n=document.getElementById('nqN').value.trim();if(!n)return;
+  S.quests.push({id:'cq'+Date.now(),name:n,cat:document.getElementById('nqC').value,xp:parseInt(document.getElementById('nqXP').value)||50,desc:document.getElementById('nqD').value.trim(),done:false,swapped:false,note:'',difficulty:null});
+  document.getElementById('nqN').value='';document.getElementById('nqD').value='';
+  saveS();rendQuests();
+}
+
+// ═══ NOTE MODAL ═══
+function openNote(id){noteQID=id;const q=S.quests.find(q=>q.id===id);if(!q)return;document.getElementById('noteTA').value=q.note||'';noteDiff=q.difficulty||null;['easy','medium','hard'].forEach(d=>{document.getElementById('d'+d[0].toUpperCase()+d.slice(1)).classList.toggle('sel',noteDiff===d);});document.getElementById('noteModal').classList.add('show');}
+function setDiff(d){noteDiff=d;document.getElementById('dEasy').classList.toggle('sel',d==='easy');document.getElementById('dMed').classList.toggle('sel',d==='medium');document.getElementById('dHard').classList.toggle('sel',d==='hard');}
+function saveNote(){const q=S.quests.find(q=>q.id===noteQID);if(q){q.note=document.getElementById('noteTA').value.trim();q.difficulty=noteDiff;}saveS();rendQuests();clov('noteModal');}
+
+// ═══ SUPPLEMENTS ═══
+function resetSuppIfNewDay(){if(S.suppDate!==today()){S.suppDate=today();S.supplements.forEach(s=>s.done=false);}}
+function rendSupps(){
+  resetSuppIfNewDay();
+  document.getElementById('suppDateLbl').textContent=new Date().toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'long'});
+  const done=S.supplements.filter(s=>s.done).length,tot=S.supplements.length;
+  document.getElementById('suppDoneN').textContent=done;
+  document.getElementById('suppTotN').textContent=tot;
+  document.getElementById('suppProgFill').style.width=tot?Math.round(done/tot*100)+'%':'0%';
+  const allDone=tot>0&&done===tot;
+  document.getElementById('suppBoostBanner').style.display=allDone?'flex':'none';
+  if(allDone)document.getElementById('suppBoostAmt').textContent=suppBoostPct();
+  if(!S.supplements.length){
+    document.getElementById('suppList').innerHTML=`<div style="text-align:center;padding:20px;color:var(--t2);font-size:11px"><div style="font-size:26px;margin-bottom:7px">💊</div>Noch keine Supplements. Füge deinen Stack hinzu!</div>`;
+    return;
+  }
+  const timeOrder={morning:0,afternoon:1,evening:2,anytime:3};
+  const sorted=[...S.supplements].sort((a,b)=>(timeOrder[a.time]||3)-(timeOrder[b.time]||3));
+  const timeLbls={morning:'☀ Morgens',afternoon:'🌤 Mittags',evening:'🌙 Abends',anytime:'⏰ Jederzeit'};
+  document.getElementById('suppList').innerHTML=sorted.map((s,oi)=>{
+    const realIdx=S.supplements.findIndex(x=>x.id===s.id);
+    return`<div class="supp-card ${s.done?'done':''}">
+      <div class="supp-chk" onclick="togSupp('${s.id}')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,8 6,13 14,3"/></svg>
+      </div>
+      <div class="supp-info">
+        <div class="supp-name">${s.name}</div>
+        <div class="supp-meta">
+          ${s.dose?`<span class="supp-dose">${s.dose}</span>`:''}
+          <span class="supp-time-badge ${s.time||'anytime'}">${timeLbls[s.time||'anytime']}</span>
+        </div>
+        ${s.note?`<div class="supp-note">${s.note}</div>`:''}
+        ${(s.streak||0)>0?`<div class="supp-streak">🔥 ${s.streak} Tage Streak</div>`:''}
+      </div>
+      ${s.done?`<button class="supp-unchk" onclick="unchkSupp('${s.id}')" title="Rückgängig">↩</button>`:''}
+      <button class="supp-del" onclick="delSupp('${s.id}')">✕</button>
+    </div>`;
+  }).join('');
+}
+function togSupp(id){
+  resetSuppIfNewDay();
+  const s=S.supplements.find(s=>s.id===id);if(!s||s.done)return;
+  s.done=true;
+  const allDone=S.supplements.every(s=>s.done);
+  if(allDone){
+    // Boost + glow + overlay
+    document.getElementById('suppOvBoost').textContent=suppBoostPct();
+    document.getElementById('suppOv').classList.add('show');
+    S.suppStreaks=(S.suppStreaks||0)+1;
+    checkTitles();
+  }
+  saveS();rendSupps();updProfile();
+}
+function unchkSupp(id){const s=S.supplements.find(s=>s.id===id);if(!s)return;s.done=false;saveS();rendSupps();updProfile();}
+function delSupp(id){S.supplements=S.supplements.filter(s=>s.id!==id);saveS();rendSupps();}
+function addSupp(){
+  const n=document.getElementById('snName').value.trim();if(!n)return;
+  S.supplements.push({id:'supp'+Date.now(),name:n,dose:document.getElementById('snDose').value.trim(),time:document.getElementById('snTime').value,note:document.getElementById('snNote').value.trim(),done:false,streak:0});
+  document.getElementById('snName').value='';document.getElementById('snDose').value='';document.getElementById('snNote').value='';
+  saveS();rendSupps();
+}
+
+// ═══ SPECIAL ═══
+function rendSpecial(){
+  document.getElementById('specialList').innerHTML=(S.specials||[]).map(q=>`
+    <div class="qcard special ${q.done?'done':''}">
+      <div class="qchk" onclick="togSp('${q.id}')"><svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,8 6,13 14,3"/></svg></div>
+      <div class="qinfo"><div class="spbadge">◈ SPECIAL</div><div class="qname">${q.name}</div><div class="qmeta"><span class="qcat">Special</span><span class="qxp">+${q.xp} XP</span></div>${q.desc?`<div class="qdesc">${q.desc}</div>`:''}</div>
+      ${q.done?`<button class="unchkbtn" onclick="unchkSp('${q.id}')" title="Rückgängig">↩</button>`:''}
+      <button class="delbtn" onclick="delSp('${q.id}')">✕</button>
+    </div>`).join('');
+}
+function togSp(id){const q=(S.specials||[]).find(q=>q.id===id);if(!q||q.done)return;q.done=true;S.xp+=q.xp;S.totalDone++;checkTitles();saveS();rendSpecial();updProfile();showRw(q.name,q.xp,'🏆 SPECIAL QUEST!','Außergewöhnlich!');}
+function unchkSp(id){const q=(S.specials||[]).find(q=>q.id===id);if(!q||!q.done)return;q.done=false;S.xp=Math.max(0,S.xp-q.xp);S.totalDone=Math.max(0,S.totalDone-1);saveS();rendSpecial();updProfile();}
+function delSp(id){S.specials=S.specials.filter(q=>q.id!==id);saveS();rendSpecial();}
+function addSp(){const n=document.getElementById('spN').value.trim();if(!n)return;S.specials.push({id:'sp'+Date.now(),name:n,desc:document.getElementById('spD').value.trim(),xp:parseInt(document.getElementById('spXP').value)||300,done:false});document.getElementById('spN').value='';document.getElementById('spD').value='';saveS();rendSpecial();}
+
+// ═══ BOSS ═══
+function rendBoss(){
+  const now=Date.now();S.bossQuests=(S.bossQuests||[]).filter(q=>q.done||q.expires>now);
+  const valid=(S.bossQuests||[]).filter(q=>!q.done);
+  let html='';
+  if(!valid.length){html=`<div style="text-align:center;padding:20px;color:var(--t2);font-size:11px"><div style="font-size:28px;margin-bottom:6px">💀</div>Kein aktiver Boss.<button style="display:block;margin:10px auto 0;background:rgba(239,68,68,.13);border:1px solid rgba(239,68,68,.27);border-radius:5px;padding:6px 14px;color:#fca5a5;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px" onclick="genBossQuest();saveS();rendBoss()">BOSS BESCHWÖREN</button></div>`;}
+  else{html=valid.map(q=>{const rem=Math.max(0,q.expires-now);const h=Math.floor(rem/3600000),m=Math.floor(rem%3600000/60000);const xpBoss=hasSkill('boss_hunter')?Math.round(q.xp*1.2):q.xp;
+    return`<div class="qcard boss boss-card"><div class="qchk" onclick="togBoss('${q.id}')"><svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,8 6,13 14,3"/></svg></div>
+      <div class="qinfo"><div class="boss-lbl">◈ BOSS QUEST ◈</div><div class="qname">${q.name}</div><div class="qmeta"><span class="qcat">💀 Boss</span><span class="qxp">+${xpBoss} XP</span></div>${q.desc?`<div class="qdesc">${q.desc}</div>`:''}<div style="font-size:9px;color:var(--r);margin-top:3px">⏳ ${h}h ${m}m</div></div>
+      <button class="delbtn" onclick="delBoss('${q.id}')">✕</button></div>`;
+  }).join('');}
+  document.getElementById('bossList').innerHTML=html;
+}
+function togBoss(id){const q=(S.bossQuests||[]).find(q=>q.id===id);if(!q||q.done)return;q.done=true;const xpB=hasSkill('boss_hunter')?Math.round(q.xp*1.2):q.xp;S.xp+=xpB;S.seasonXP=(S.seasonXP||0)+xpB;S.totalDone++;setTimeout(()=>genBossQuest(),600);checkTitles();saveS();rendBoss();updProfile();showRw(q.name,xpB,'💀 BOSS BESIEGT!','Mächtiger Hunter!');}
+function delBoss(id){S.bossQuests=S.bossQuests.filter(q=>q.id!==id);saveS();rendBoss();}
+function addBQ(){const n=document.getElementById('bqN').value.trim();if(!n)return;S.bossQuests.push({id:'bq'+Date.now(),name:n,desc:document.getElementById('bqD').value.trim(),xp:parseInt(document.getElementById('bqXP').value)||500,done:false,expires:Date.now()+48*3600*1000});document.getElementById('bqN').value='';document.getElementById('bqD').value='';saveS();rendBoss();}
+
+// ═══ DUNGEON ═══
+function rendDungeon(){
+  const c=document.getElementById('dungeonContent');
+  const done=S.quests.filter(q=>q.done).length,tot=S.quests.length,pct=tot?Math.round(done/tot*100):0;
+  if(!S.dungeonActive){
+    c.innerHTML=`<div class="dungeon-card">
+      <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:900;margin-bottom:5px">🏰 DUNGEON RUN</div>
+      <div style="font-size:10px;color:var(--t2);margin-bottom:10px">Alle Tagesquests im Zeitlimit. Schneller = mehr Bonus-XP.</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px">
+        <div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.18);border-radius:6px;padding:8px;text-align:center"><div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--r)">1h</div><div style="font-size:8px;color:var(--t2)">+200% XP</div></div>
+        <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);border-radius:6px;padding:8px;text-align:center"><div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--gold)">2h</div><div style="font-size:8px;color:var(--t2)">+100% XP</div></div>
+        <div style="background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);border-radius:6px;padding:8px;text-align:center"><div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--g)">3h</div><div style="font-size:8px;color:var(--t2)">+50% XP</div></div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="d-btn" onclick="startDungeon(3600)">⚡ 1h HARDCORE</button>
+        <button class="d-btn" style="background:linear-gradient(135deg,var(--gold),var(--orange))" onclick="startDungeon(7200)">⚔ 2h NORMAL</button>
+        <button class="d-btn" style="background:linear-gradient(135deg,var(--g),#166534)" onclick="startDungeon(10800)">🛡 3h EINFACH</button>
+      </div>
+      <div style="margin-top:8px;font-size:9px;color:var(--t2)">Runs: <span style="color:var(--text);font-family:'Orbitron',monospace">${S.dungeonRuns||0}</span></div>
+    </div>`;
+  } else {
+    const elapsed=Math.floor((Date.now()-(S.dungeonStart||Date.now()))/1000);
+    const rem=Math.max(0,S.dungeonLimit-elapsed);
+    const h=Math.floor(rem/3600),m=Math.floor(rem%3600/60),s=rem%60;
+    const bonusPct=S.dungeonLimit===3600?200:S.dungeonLimit===7200?100:50;
+    c.innerHTML=`<div class="dungeon-card">
+      <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:900;color:var(--r);margin-bottom:5px">⚔ DUNGEON AKTIV</div>
+      <div class="d-timer" id="dtimer">${rem===0?'ABGELAUFEN':`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}</div>
+      <div class="d-prog"><div class="d-pfill" style="width:${pct}%"></div></div>
+      <div style="font-size:10px;color:var(--t2);margin-bottom:8px">${done}/${tot} Quests · +${bonusPct}% Bonus</div>
+      ${pct===100?`<button class="d-btn" onclick="completeDungeon()" style="margin-bottom:6px">🏆 ABSCHLIESSEN</button>`:''}
+      <button class="d-btn danger" onclick="cancelDungeon()">✕ Abbrechen</button>
+    </div>`;
+    if(dungeonIV)clearInterval(dungeonIV);
+    dungeonIV=setInterval(()=>{
+      const el2=Math.floor((Date.now()-(S.dungeonStart||Date.now()))/1000);const r2=Math.max(0,S.dungeonLimit-el2);
+      const tel=document.getElementById('dtimer');
+      if(tel){const h2=Math.floor(r2/3600),m2=Math.floor(r2%3600/60),s2=r2%60;tel.textContent=r2===0?'⏰ ABGELAUFEN':`${String(h2).padStart(2,'0')}:${String(m2).padStart(2,'0')}:${String(s2).padStart(2,'0')}`;}
+      if(r2===0){clearInterval(dungeonIV);S.dungeonActive=false;S.penalties=(S.penalties||0)+1;saveS();updProfile();rendDungeon();}
+    },1000);
+  }
+}
+function startDungeon(limit){S.dungeonActive=true;S.dungeonStart=Date.now();S.dungeonLimit=limit;saveS();rendDungeon();}
+function completeDungeon(){
+  if(dungeonIV)clearInterval(dungeonIV);
+  const bonus=S.dungeonLimit===3600?2:S.dungeonLimit===7200?1:0.5;
+  const expertBonus=hasSkill('dungeon_expert')?0.3:0;
+  const bonusXP=Math.round(S.quests.reduce((a,q)=>a+q.xp,0)*(bonus+expertBonus));
+  S.xp+=bonusXP;S.seasonXP=(S.seasonXP||0)+bonusXP;S.dungeonActive=false;S.dungeonRuns=(S.dungeonRuns||0)+1;
+  checkTitles();saveS();rendDungeon();updProfile();showRw('Dungeon',bonusXP,'🏰 DUNGEON GECLEARED!','Brillanter Hunter!');
+}
+function cancelDungeon(){if(dungeonIV)clearInterval(dungeonIV);S.dungeonActive=false;saveS();rendDungeon();}
+
+// ═══ INVENTORY ═══
+function rendInventory(){
+  document.getElementById('invXPDisp').textContent=S.xp;
+  document.getElementById('invGrid').innerHTML=S.inventory.map(item=>{
+    const def=INVENTORY_DEF.find(d=>d.id===item.id)||item;
+    const canAfford=S.xp>=def.cost;
+    const isActive=isItemActive(def.type);
+    return`<div class="inv-card rarity-${def.rarity}">
+      <div class="inv-icon">${def.icon}</div>
+      <div class="inv-name">${def.name}</div>
+      <div class="inv-rarity">${def.rarity}</div>
+      <div class="inv-desc">${def.desc}</div>
+      <div class="inv-count">×${item.count||0} im Inventar</div>
+      <div class="inv-cost">${def.cost} XP kaufen</div>
+      <button class="inv-btn" ${!canAfford?'disabled':''} onclick="buyItem('${item.id}')">${canAfford?'KAUFEN':'Zu wenig XP'}</button>
+      ${(item.count||0)>0?`<button class="inv-use-btn" ${isActive?'disabled':''} onclick="useItem('${item.id}')">${isActive?'AKTIV':'EINSETZEN'}</button>`:''}
+    </div>`;
+  }).join('');
+}
+function buyItem(id){
+  const item=S.inventory.find(i=>i.id===id);const def=INVENTORY_DEF.find(d=>d.id===id);
+  if(!item||!def||S.xp<def.cost)return;
+  S.xp-=def.cost;item.count=(item.count||0)+1;
+  saveS();rendInventory();updProfile();showRw(def.name,0,'🎒 ITEM GEKAUFT!',`${def.name} ×1 erhalten`,'',def.effect);
+}
+function useItem(id){
+  const item=S.inventory.find(i=>i.id===id);const def=INVENTORY_DEF.find(d=>d.id===id);
+  if(!item||!def||(item.count||0)<=0)return;
+  item.count--;
+  if(def.type==='instant_xp'){S.xp+=500;updProfile();showRw('XP-Bombe',500,'💣 XP-BOMBE!','+500 XP erhalten!');}
+  else if(def.type==='boss_summon'){genBossQuest();saveS();rendBoss();showRw(def.name,0,'🎫 BOSS BESCHWOREN!','Ein neuer Boss-Quest erscheint!');}
+  else if(def.type==='streak_shield'){S.penaltySkip=(S.penaltySkip||0)+1;showRw(def.name,0,'🛡 STREAK-SCHILD!','Nächste Penalty wird geblockt!');}
+  else{const dur=def.type==='day_boost'?8*3600000:def.type==='time_freeze'?24*3600000:3*3600000;S.activeItem=def.type;S.activeItemExpires=Date.now()+dur;showRw(def.name,0,'⚡ ITEM AKTIV!',def.effect);}
+  saveS();rendInventory();updProfile();
+}
+
+// ═══ SKILLS ═══
+function rendSkills(){
+  document.getElementById('skillsGrid').innerHTML=S.skills.map(sk=>{
+    const def=SKILLS_DEF.find(d=>d.id===sk.id)||sk;const canAfford=S.xp>=def.cost;
+    return`<div class="skill-card ${sk.unlocked?'unlocked':'locked'}">
+      <div class="skill-icon">${def.icon}</div><div class="skill-name">${def.name}</div>
+      <div class="skill-desc">${def.desc}</div><div class="skill-cost">${def.cost} XP</div>
+      ${sk.unlocked?`<div class="skill-status ul">✓ AKTIV — ${def.effect}</div>`:
+      `<button class="unlock-btn" ${!canAfford?'disabled':''} onclick="unlockSkill('${sk.id}')">${canAfford?'FREISCHALTEN':'Zu wenig XP'}</button>`}
+    </div>`;
+  }).join('');
+}
+function unlockSkill(id){
+  const sk=S.skills.find(s=>s.id===id);const def=SKILLS_DEF.find(d=>d.id===id);
+  if(!sk||!def||sk.unlocked||S.xp<def.cost)return;
+  S.xp-=def.cost;sk.unlocked=true;sk.obtainedAt=today();
+  saveS();rendSkills();rendLearned();updProfile();showRw(def.name,0,'🧬 SKILL ERLERNT!',`"${def.name}" aktiv`,'',def.effect);
+}
+
+// ═══ LEARNED ═══
+function rendLearned(){
+  const unlocked=S.skills.filter(s=>s.unlocked);
+  document.getElementById('learnedCount').textContent=unlocked.length;
+  const cont=document.getElementById('learnedContent');
+  if(!unlocked.length){cont.innerHTML=`<div style="text-align:center;padding:30px;color:var(--t2)"><div style="font-size:32px;margin-bottom:8px">📖</div>Noch keine Skills erlernt.<div style="font-size:10px;color:var(--t3);margin-top:5px">Gehe zum Fähigkeiten-Baum.</div></div>`;return;}
+  cont.innerHTML=`<div class="learned-grid">${unlocked.map(sk=>{const def=SKILLS_DEF.find(d=>d.id===sk.id)||sk;return`<div class="lskill-card"><div class="lskill-icon">${def.icon}</div><div class="lskill-name">${def.name}</div><div class="lskill-desc">${def.desc}</div><div class="lskill-effect">${def.effect}</div>${sk.obtainedAt?`<div class="skill-obtained-date">Erlernt: ${sk.obtainedAt}</div>`:''}</div>`;}).join('')}</div>`;
+}
+
+// ═══ BODY ═══
+function getMCol(s){if(s===0)return{f:'rgba(28,20,50,.42)',st:'rgba(255,255,255,.05)'};if(s<=10)return{f:'rgba(76,29,149,.48)',st:'rgba(124,58,237,.42)'};if(s<=30)return{f:'rgba(124,58,237,.6)',st:'rgba(167,139,250,.62)'};if(s<=60)return{f:'rgba(168,85,247,.7)',st:'rgba(216,180,254,.72)'};if(s<=100)return{f:'rgba(245,158,11,.65)',st:'rgba(252,211,77,.77)'};return{f:'rgba(239,68,68,.72)',st:'rgba(252,165,165,.82)'};}
+function getCCol(s){if(s===0)return{f:'rgba(26,16,32,.42)',st:'rgba(255,255,255,.05)'};if(s<=10)return{f:'rgba(127,29,29,.48)',st:'rgba(220,38,38,.38)'};if(s<=30)return{f:'rgba(220,38,38,.58)',st:'rgba(248,113,113,.58)'};if(s<=60)return{f:'rgba(249,115,22,.62)',st:'rgba(253,186,116,.62)'};if(s<=100)return{f:'rgba(245,158,11,.65)',st:'rgba(252,211,77,.72)'};return{f:'rgba(253,224,71,.7)',st:'rgba(254,240,138,.82)'};}
+function getMBar(s){if(s===0)return'rgba(255,255,255,.08)';if(s<=10)return'#4c1d95';if(s<=30)return'#7c3aed';if(s<=60)return'#a855f7';if(s<=100)return'#f59e0b';return'#ef4444';}
+function getCBar(s){if(s===0)return'rgba(255,255,255,.08)';if(s<=10)return'#7f1d1d';if(s<=30)return'#dc2626';if(s<=60)return'#f97316';if(s<=100)return'#f59e0b';return'#fde047';}
+function getMlvl(s){if(s===0)return'Untrainiert';if(s<=10)return'Anfänger';if(s<=30)return'Fortgeschritten';if(s<=60)return'Stark';if(s<=100)return'Elite';return'S-Rang';}
+function getClvl(s){if(s===0)return'Keine Ausdauer';if(s<=10)return'Anfänger';if(s<=30)return'Läufer';if(s<=60)return'Ausdauer-Hunter';if(s<=100)return'Elite';return'S-Rang';}
+function updMuscleSVG(){MUSCLE_GS.forEach(g=>{const el=document.getElementById(g.svg);if(!el)return;const c=getMCol(S.muscles[g.id]||0);el.querySelectorAll('path,rect,ellipse').forEach(sh=>{sh.style.fill=c.f;sh.style.stroke=c.st;});});}
+function updCardioSVG(){CARDIO_GS.forEach(g=>{const el=document.getElementById(g.svg);if(!el)return;const c=getCCol(S.cardio[g.id]||0);el.querySelectorAll('path,rect,ellipse').forEach(sh=>{sh.style.fill=c.f;sh.style.stroke=c.st;});});}
+function rendMuscles(){
+  const tot=MUSCLE_GS.reduce((a,g)=>a+(S.muscles[g.id]||0),0);
+  document.getElementById('mXP').textContent=MUSCLE_GS.reduce((a,g)=>a+(S.muscles[g.id]||0)*g.xpP,0);
+  document.getElementById('mGlvl').textContent=getMlvl(Math.round(tot/MUSCLE_GS.length));
+  document.getElementById('mList').innerHTML=MUSCLE_GS.map(g=>{const s=S.muscles[g.id]||0,bc=getMBar(s),lv=getMlvl(s),pct=Math.min(100,Math.round(s/110*100));
+    return`<div class="mgrow"><div class="mgtop"><span class="mglbl">${g.lbl}</span><span class="mgmeta" style="color:${bc}">${s} · ${lv}</span></div><div class="barw"><div class="barf" style="width:${pct}%;background:${bc}"></div></div><div class="btnrow"><button class="trbtn" onclick="trainM('${g.id}')">+ Training</button>${s>0?`<button class="decbtn" onclick="decM('${g.id}')">−</button>`:''}</div></div>`;
+  }).join('')+`<div class="leg"><div class="leg-t">Fortschritt</div>${[['#1e1a35','0'],['#4c1d95','1–10'],['#7c3aed','11–30'],['#a855f7','31–60'],['#f59e0b','61–100'],['#ef4444','101+ S']].map(([c,l])=>`<div class="leg-r"><div class="leg-d" style="background:${c}"></div><span class="leg-tx">${l}</span></div>`).join('')}</div><button class="rstbtn" onclick="resetMuscles()">Muskeln zurücksetzen</button>`;
+}
+function rendCardio(){
+  const tot=CARDIO_GS.reduce((a,g)=>a+(S.cardio[g.id]||0),0);
+  document.getElementById('cXP').textContent=CARDIO_GS.reduce((a,g)=>a+(S.cardio[g.id]||0)*g.xpP,0);
+  document.getElementById('cGlvl').textContent=getClvl(Math.round(tot/CARDIO_GS.length));
+  document.getElementById('cList').innerHTML=CARDIO_GS.map(g=>{const s=S.cardio[g.id]||0,bc=getCBar(s),lv=getClvl(s),pct=Math.min(100,Math.round(s/110*100));
+    return`<div class="mgrow"><div class="mgtop"><span class="mglbl">${g.icon} ${g.lbl}</span><span class="mgmeta" style="color:${bc}">${s} · ${lv}</span></div><div style="font-size:8px;color:var(--t3);margin-bottom:3px">${g.desc}</div><div class="barw"><div class="barf" style="width:${pct}%;background:${bc}"></div></div><div class="btnrow"><button class="trbtn cs" onclick="trainC('${g.id}')">+ Cardio</button>${s>0?`<button class="decbtn" onclick="decC('${g.id}')">−</button>`:''}</div></div>`;
+  }).join('')+`<div class="leg"><div class="leg-t">Cardio-Stufen</div>${[['#1a1020','0'],['#7f1d1d','1–10'],['#dc2626','11–30'],['#f97316','31–60'],['#f59e0b','61–100'],['#fde047','101+ S']].map(([c,l])=>`<div class="leg-r"><div class="leg-d" style="background:${c}"></div><span class="leg-tx">${l}</span></div>`).join('')}</div><button class="rstbtn" onclick="resetCardio()">Cardio zurücksetzen</button>`;
+}
+function trainM(id){S.muscles[id]=(S.muscles[id]||0)+1;saveS();rendMuscles();updMuscleSVG();flashSvg(id,'m');}
+function decM(id){if(S.muscles[id]>0)S.muscles[id]--;saveS();rendMuscles();updMuscleSVG();}
+function trainC(id){S.cardio[id]=(S.cardio[id]||0)+1;saveS();rendCardio();updCardioSVG();flashSvg(id,'c');}
+function decC(id){if(S.cardio[id]>0)S.cardio[id]--;saveS();rendCardio();updCardioSVG();}
+function resetMuscles(){MUSCLE_GS.forEach(g=>S.muscles[g.id]=0);saveS();rendMuscles();updMuscleSVG();}
+function resetCardio(){CARDIO_GS.forEach(g=>S.cardio[g.id]=0);saveS();rendCardio();updCardioSVG();}
+function flashSvg(id,type){const gs=type==='m'?MUSCLE_GS:CARDIO_GS;const g=gs.find(x=>x.id===id);if(!g)return;const el=document.getElementById(g.svg);if(!el)return;el.style.filter='brightness(2.5)';setTimeout(()=>el.style.filter='',220);}
+
+// ═══ MEASUREMENTS ═══
+function rendMeasures(){
+  const grid=document.getElementById('measureGrid');if(!grid)return;
+  grid.innerHTML=MEASURES_DEF.map(m=>{
+    const hist=S.measureHistory[m.key]||[];const cur=S.measures[m.key];const prev=hist.length>=2?hist[hist.length-2].v:null;
+    const diff=cur&&prev?+(cur-prev).toFixed(1):null;
+    const trendCls=diff===null?'':(m.key==='weight'||m.key==='waist'||m.key==='bodyfat')?diff>0?'up':'down':diff>0?'down':'up';
+    return`<div class="mcard"><div style="font-size:16px;margin-bottom:2px">${m.icon}</div><div class="mcard-val">${cur!==undefined?cur:'—'}</div><div class="mcard-unit">${m.unit}</div><div class="mcard-lbl">${m.lbl}</div>${diff!==null?`<div class="mcard-trend ${trendCls}">${diff>0?'▲':'▼'} ${Math.abs(diff)}</div>`:''}</div>`;
+  }).join('');
+}
+function saveMeasure(){const key=document.getElementById('mKey').value;const val=parseFloat(document.getElementById('mVal').value);if(isNaN(val))return;S.measures[key]=val;if(!S.measureHistory[key])S.measureHistory[key]=[];S.measureHistory[key].push({d:today(),v:val});if(S.measureHistory[key].length>30)S.measureHistory[key]=S.measureHistory[key].slice(-30);document.getElementById('mVal').value='';saveS();rendMeasures();}
+
+// ═══ GOALS ═══
+function rendGoals(){
+  const gl=document.getElementById('goalsList');if(!gl)return;
+  if(!S.goals.length){gl.innerHTML=`<div style="text-align:center;padding:20px;color:var(--t2);font-size:11px"><div style="font-size:26px;margin-bottom:6px">🎯</div>Noch keine Ziele gesetzt.</div>`;return;}
+  gl.innerHTML=S.goals.map(g=>{
+    const pct=Math.min(100,Math.round((g.current/g.target)*100));
+    const daysLeft=g.deadline?Math.ceil((new Date(g.deadline)-new Date())/(1000*3600*24)):null;
+    return`<div class="goal-card">
+      <button class="goal-del" onclick="delGoal('${g.id}')">✕</button>
+      <div class="goal-title">${g.name}</div>
+      <div class="goal-deadline">${g.deadline?`Deadline: ${new Date(g.deadline).toLocaleDateString('de-DE')} ${daysLeft!==null?`(${daysLeft>0?daysLeft+' Tage':'abgelaufen'})`:''}`:'Kein Enddatum'}</div>
+      <div class="goal-barw"><div class="goal-barf" style="width:${pct}%"></div></div>
+      <div class="goal-meta"><span>${g.current} / ${g.target} ${g.unit}</span><span>${pct}%</span></div>
+      <div class="goal-adj">
+        <button class="adj-btn" onclick="adjGoal('${g.id}',-1)">−1</button>
+        <input class="fi" id="ga_${g.id}" type="number" step="0.1" placeholder="Wert" style="flex:1;max-width:70px"/>
+        <button class="adj-btn" onclick="adjGoalCustom('${g.id}')">Setzen</button>
+        <button class="adj-btn" onclick="adjGoal('${g.id}',1)">+1</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function adjGoal(id,delta){const g=S.goals.find(g=>g.id===id);if(!g)return;g.current=Math.max(0,+(g.current+delta).toFixed(1));saveS();rendGoals();}
+function adjGoalCustom(id){const g=S.goals.find(g=>g.id===id);if(!g)return;const v=parseFloat(document.getElementById('ga_'+id).value);if(!isNaN(v)){g.current=Math.max(0,v);saveS();rendGoals();}}
+function delGoal(id){S.goals=S.goals.filter(g=>g.id!==id);saveS();rendGoals();}
+function addGoal(){const n=document.getElementById('gnName').value.trim();if(!n)return;S.goals.push({id:'g'+Date.now(),name:n,target:parseFloat(document.getElementById('gnTarget').value)||100,current:parseFloat(document.getElementById('gnCurrent').value)||0,unit:document.getElementById('gnUnit').value||'',deadline:document.getElementById('gnDate').value||''});['gnName','gnTarget','gnUnit','gnCurrent','gnDate'].forEach(id=>{document.getElementById(id).value='';});saveS();rendGoals();}
+
+// ═══ TEMPLATES ═══
+function rendTemplates(){
+  const list=document.getElementById('templatesList');if(!list)return;
+  if(!S.templates||!S.templates.length){list.innerHTML=`<div style="text-align:center;padding:16px;color:var(--t2);font-size:11px">Noch keine Vorlagen gespeichert.</div>`;return;}
+  list.innerHTML=S.templates.map(t=>`<div class="template-card">
+    <div class="template-name">${t.name}</div>
+    <div class="template-tags">${[...new Set(t.quests.map(q=>q.cat))].map(c=>`<span class="template-tag">${CAT_ICONS[c]||''} ${CAT_LABELS[c]||c}</span>`).join('')}</div>
+    <div style="font-size:10px;color:var(--t2);margin-bottom:7px">${t.quests.length} Quests · Erstellt ${t.date||''}</div>
+    <div class="template-btns">
+      <button class="template-load-btn" onclick="loadTemplate('${t.id}')">▶ Als Tagesquests laden</button>
+      <button class="template-del-btn" onclick="delTemplate('${t.id}')">✕</button>
+    </div>
+  </div>`).join('');
+  // Recurring
+  const recurList=document.getElementById('recurList');if(!recurList)return;
+  const days=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  if(!S.recurringQuests||!S.recurringQuests.length){recurList.innerHTML=`<div style="font-size:10px;color:var(--t2)">Keine wiederkehrenden Quests.</div>`;}
+  else{recurList.innerHTML=S.recurringQuests.map(rq=>`<div class="recur-card">
+    <div style="flex:1"><div style="font-size:12px;font-weight:700">${rq.name}</div><div style="font-size:9px;color:var(--t2)">${CAT_ICONS[rq.cat]||''} ${rq.xp} XP</div></div>
+    <div class="recur-days">${days.map((d,i)=>`<div class="recur-day ${rq.days[i]?'on':'off'}">${d}</div>`).join('')}</div>
+    <button class="delbtn" onclick="delRecurring('${rq.id}')">✕</button>
+  </div>`).join('');}
+}
+function saveTemplate(){
+  const n=document.getElementById('tplName').value.trim();if(!n||!S.quests.length)return;
+  S.templates=S.templates||[];
+  S.templates.push({id:'tpl'+Date.now(),name:n,quests:S.quests.map(q=>({...q})),date:today()});
+  document.getElementById('tplName').value='';
+  saveS();rendTemplates();
+}
+function loadTemplate(id){
+  const t=(S.templates||[]).find(t=>t.id===id);if(!t)return;
+  S.quests=t.quests.map(q=>({...q,id:'dq'+Date.now()+Math.random(),done:false,note:'',difficulty:null}));
+  saveS();rendQuests();msw('daily',document.querySelector('[data-id=daily]'));
+}
+function delTemplate(id){S.templates=S.templates.filter(t=>t.id!==id);saveS();rendTemplates();}
+function initRQDays(){const days=['Mo','Di','Mi','Do','Fr','Sa','So'];document.getElementById('rqDaysRow').innerHTML=days.map((d,i)=>`<div class="recur-day ${rqDaysSelected[i]?'on':'off'}" onclick="toggleRQDay(${i})" style="flex:1">${d}</div>`).join('');}
+function toggleRQDay(i){rqDaysSelected[i]=!rqDaysSelected[i];initRQDays();}
+function addRecurring(){
+  const n=document.getElementById('rqName').value.trim();if(!n)return;
+  S.recurringQuests=S.recurringQuests||[];
+  S.recurringQuests.push({id:'rq'+Date.now(),name:n,cat:document.getElementById('rqCat').value,xp:parseInt(document.getElementById('rqXP').value)||50,days:[...rqDaysSelected]});
+  document.getElementById('rqName').value='';rqDaysSelected=[false,false,false,false,false,false,false];initRQDays();
+  saveS();rendTemplates();
+}
+function delRecurring(id){S.recurringQuests=S.recurringQuests.filter(r=>r.id!==id);saveS();rendTemplates();}
+
+// ═══ SEASON & PRESTIGE ═══
+function rendSeason(){
+  const sc=document.getElementById('seasonContent');if(!sc)return;
+  const seasonEnd=S.seasonStart+(SEASON_DURATION_DAYS*24*3600*1000);
+  const rem=Math.max(0,seasonEnd-Date.now());
+  const d=Math.floor(rem/86400000),h=Math.floor(rem%86400000/3600000);
+  const elapsed=Date.now()-S.seasonStart;
+  const pct=Math.min(100,Math.round((elapsed/(SEASON_DURATION_DAYS*24*3600*1000))*100));
+  const seasonNum=S.seasonHistory?S.seasonHistory.length+1:1;
+  // Season leaderboard: just current player for now
+  const lbEntries=[{name:S.name,xp:S.seasonXP||0,avatar:S.avatar||'⚔',isMe:true}];
+  if(S.rivalName){lbEntries.push({name:S.rivalName,xp:Math.round((S.seasonXP||0)*1.15+150),avatar:'👹',isMe:false});}
+  lbEntries.sort((a,b)=>b.xp-a.xp);
+  sc.innerHTML=`<div class="season-card">
+    <div class="season-name">⭐ SEASON ${seasonNum}</div>
+    <div class="season-timer">${d}T ${h}h verbleibend</div>
+    <div class="season-prog"><div class="season-pfill" style="width:${pct}%"></div></div>
+    <div style="font-size:10px;color:var(--t2);margin-bottom:6px">${pct}% der Season vergangen · ${S.seasonXP||0} XP diese Season</div>
+    <div class="season-ranks">
+      ${lbEntries.map((e,i)=>`<div class="season-rank-card ${e.isMe?'border:1px solid rgba(124,58,237,.4)':''}">
+        <div class="season-rank-pos">${['🥇','🥈','🥉'][i]||i+1+'.'}</div>
+        <div style="font-size:18px">${e.avatar}</div>
+        <div><div class="season-rank-name" ${e.isMe?'style="color:var(--c)"':''}>${e.name}</div><div class="season-rank-xp">${e.xp} XP</div></div>
+      </div>`).join('')}
+    </div>
+    ${rem<=0?`<button class="d-btn" style="margin-top:10px;width:100%" onclick="endSeason()">⭐ SEASON BEENDEN & NEU STARTEN</button>`:''}
+  </div>
+  <div class="prestige-card">
+    <div style="font-family:'Orbitron',monospace;font-size:10px;letter-spacing:3px;color:var(--r);margin-bottom:5px">PRESTIGE SYSTEM</div>
+    <div class="prestige-level">★ ${S.prestige||0}</div>
+    <div class="prestige-bonus">${S.prestige>0?`+${S.prestigeBonus}% permanenter XP-Bonus`:'Noch kein Prestige'}</div>
+    <div style="font-size:10px;color:var(--t2);margin-top:6px;line-height:1.5">Prestige setzt dein XP auf 0 zurück, gibt aber +5% permanenten XP-Bonus. S-Rang erforderlich.</div>
+    <button class="prestige-btn" ${S.xp<6000?'disabled':''} onclick="document.getElementById('prestigeOv').classList.add('show')">
+      ${S.xp>=6000?'PRESTIGE ERREICHEN ⚡':'S-Rang (6000 XP) erforderlich'}
+    </button>
+  </div>`;
+
+  // Rival in season tab
+  const rc=document.getElementById('rivalContent');if(!rc)return;
+  if(!S.rivalName){rc.innerHTML=`<div style="text-align:center;padding:14px;color:var(--t2);font-size:10px">Kein Rival gesetzt. Trage einen Namen ein um den Wettbewerb zu starten.</div>`;return;}
+  const rivalXP=Math.round(S.xp*1.12+200);const winning=S.xp>=rivalXP;
+  rc.innerHTML=`<div class="rival-card">
+    <div class="rival-vs-big">VS RIVAL</div>
+    <div class="rival-compare">
+      <div class="rival-you">
+        <div style="font-size:24px">${S.avatar||'⚔'}</div>
+        <div class="rival-stat ${winning?'winning':'losing'}">${S.xp}</div>
+        <div class="rival-label">${S.name}</div>
+      </div>
+      <div class="rival-center">VS</div>
+      <div class="rival-enemy">
+        <div style="font-size:24px">👹</div>
+        <div class="rival-stat ${!winning?'winning':'losing'}">${rivalXP}</div>
+        <div class="rival-label">${S.rivalName}</div>
+      </div>
+    </div>
+    <div class="rival-gap">${winning?`Du führst um ${S.xp-rivalXP} XP 🏆`:`Rival führt um ${rivalXP-S.xp} XP — Hol auf, Hunter! 💀`}</div>
+  </div>`;
+}
+function endSeason(){
+  S.seasonHistory=(S.seasonHistory||[]).concat({season:S.seasonHistory?S.seasonHistory.length+1:1,xp:S.seasonXP,date:today()});
+  S.seasonStart=Date.now();S.seasonXP=0;
+  saveS();rendSeason();showRw('Season Ende',0,'⭐ SEASON BEENDET!',`${S.seasonXP} XP verdient!`);
+}
+function doPrestige(){
+  clov('prestigeOv');S.prestige=(S.prestige||0)+1;S.prestigeBonus=(S.prestige)*5;S.xp=0;
+  saveS();updProfile();rendSeason();showRw('Prestige',0,'🔱 PRESTIGE!',`Prestige-Level ${S.prestige} erreicht!`,'',`+${S.prestigeBonus}% permanenter XP-Bonus`);
+}
+
+// ═══ STREAKS ═══
+function rendStreaks(){
+  const hist=S.history||[],l14=hist.slice(-14),cur=S.streak||0;
+  document.getElementById('skGrid').innerHTML=`
+    <div class="skcard ${cur>=3?'fire':''}"><div class="sknum" style="color:${cur>=7?'var(--gold)':cur>=3?'var(--p)':'var(--text)'}">${cur}</div><div class="sklbl">Aktueller Streak</div><div class="dots">${l14.map((d,i)=>`<div class="dot ${d.ok?'y':'n'} ${i===l14.length-1?'t':''}"></div>`).join('')}${Array(Math.max(0,14-l14.length)).fill('<div class="dot"></div>').join('')}</div></div>
+    <div class="skcard"><div class="sknum" style="color:var(--gold)">${S.longest||0}</div><div class="sklbl">Längster Streak</div></div>
+    <div class="skcard"><div class="sknum" style="color:var(--c)">${S.totalDone||0}</div><div class="sklbl">Quests Gesamt</div></div>
+    <div class="skcard"><div class="sknum" style="color:var(--r)">${S.penalties||0}</div><div class="sklbl">Penalties</div></div>`;
+  const last7=hist.slice(-7);
+  document.getElementById('weeklyReport').innerHTML=`<div class="wr-title">WOCHENRÜCKBLICK</div>
+    <div class="wr-grid">
+      <div class="wr-item"><div class="wr-val" style="color:var(--p)">${last7.filter(d=>d.ok).length}</div><div class="wr-lbl">Gute Tage</div></div>
+      <div class="wr-item"><div class="wr-val" style="color:var(--r)">${last7.filter(d=>!d.ok).length}</div><div class="wr-lbl">Penalties</div></div>
+      <div class="wr-item"><div class="wr-val" style="color:var(--gold)">${last7.reduce((a,d)=>a+(d.xp||0),0)}</div><div class="wr-lbl">XP verdient</div></div>
+      <div class="wr-item"><div class="wr-val" style="color:var(--c)">${Math.round(last7.reduce((a,d)=>a+(d.xp||0),0)/Math.max(1,last7.length))}</div><div class="wr-lbl">Ø XP/Tag</div></div>
+    </div>
+    <div style="display:flex;gap:3px;padding-bottom:16px">
+      ${['Mo','Di','Mi','Do','Fr','Sa','So'].map((day,i)=>{const d=last7[i];return`<div style="flex:1;background:${d?d.ok?'var(--g)':'var(--r)':'rgba(255,255,255,.06)'};border-radius:2px;min-height:18px;position:relative"><div style="position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);font-size:7px;color:var(--t3)">${day}</div></div>`;}).join('')}
+    </div>`;
+  document.getElementById('giftList').innerHTML=GIFTS.map(g=>{const ul=cur>=g.days;return`<div class="giftcard ${ul?'ul':'lk'}"><div class="gi">${g.icon}</div><div class="ginfo"><h3>${g.name}</h3><p>${g.desc}</p></div><div class="greq"><span class="gd">${g.days}</span>Tage${ul?'<span style="color:var(--g);font-size:8px;display:block">✓ FREI</span>':''}</div></div>`;}).join('');
+}
+
+// ═══ STATS ═══
+function rendStats(){
+  const rk=getRank(),lvl=Math.floor(S.xp/200)+1;
+  document.getElementById('statsGrid').innerHTML=`
+    <div class="statcard"><div class="statval" style="color:${rk.c}">${rk.r}</div><div class="statlbl">Rang</div></div>
+    <div class="statcard"><div class="statval" style="color:var(--p)">${lvl}</div><div class="statlbl">Level</div></div>
+    <div class="statcard"><div class="statval" style="color:var(--gold)">${S.xp}</div><div class="statlbl">XP</div></div>
+    <div class="statcard"><div class="statval" style="color:var(--c)">${S.streak||0}</div><div class="statlbl">Streak</div></div>
+    <div class="statcard"><div class="statval" style="color:var(--g)">${S.totalDone||0}</div><div class="statlbl">Erledigt</div></div>
+    <div class="statcard"><div class="statval" style="color:var(--r)">${S.penalties||0}</div><div class="statlbl">Penalties</div></div>
+    <div class="statcard"><div class="statval" style="color:var(--orange)">${S.dungeonRuns||0}</div><div class="statlbl">Dungeons</div></div>
+    <div class="statcard"><div class="statval" style="color:#a855f7">${S.skills?S.skills.filter(s=>s.unlocked).length:0}</div><div class="statlbl">Skills</div></div>
+    <div class="statcard"><div class="statval" style="color:var(--c)">${S.suppStreaks||0}</div><div class="statlbl">Supp-Tage</div></div>
+    <div class="statcard"><div class="statval" style="color:var(--r)">${S.prestige||0}</div><div class="statlbl">Prestige</div></div>`;
+  drawXPChart();drawPieChart();drawHeatmap();rendInsights();
+  document.getElementById('rankRoad').innerHTML=RANKS.map(r=>{const cur=rk.r===r.r;return`<div class="rrow ${cur?'cur':''}"><div class="rbsm ${r.cls}">${r.r}</div><div class="rname">${r.r}-Rang</div><div class="rxp">${r.min}–${r.max===999999?'∞':r.max} XP</div></div>`;}).join('');
+  const tg=document.getElementById('titlesGrid');
+  const ul=(S.titles||[]).filter(t=>t.unlocked);
+  if(!ul.length)tg.innerHTML=`<div style="font-size:9px;color:var(--t3)">Noch keine Titel</div>`;
+  else tg.innerHTML=ul.map(t=>{const def=TITLES_DEF.find(d=>d.id===t.id)||t;return`<div class="title-chip ${S.activeTitle===t.id?'active-title':''}" onclick="setActiveTitle('${t.id}')"><div class="ticon">${def.icon}</div><div class="tname">${def.name}</div>${S.activeTitle===t.id?'<div style="font-size:7px;color:var(--gold)">AKTIV</div>':''}</div>`;}).join('');
+}
+function setActiveTitle(id){S.activeTitle=id;saveS();updProfile();rendStats();}
+
+// ═══ INSIGHTS ═══
+function rendInsights(){
+  const cont=document.getElementById('insightsContent');if(!cont)return;
+  const hist=S.history||[];const last7=hist.slice(-7);
+  const catStats=S.catStats||{};
+  const timeLog=S.questTimeLog||[];
+  // Hour distribution
+  const hourCounts=new Array(24).fill(0);timeLog.forEach(l=>hourCounts[l.h]=(hourCounts[l.h]||0)+1);
+  const peakHour=hourCounts.indexOf(Math.max(...hourCounts));
+  const hourNames=['0–4','4–8','8–12','12–16','16–20','20–24'];
+  const hourBuckets=[0,0,0,0,0,0];hourCounts.forEach((c,h)=>hourBuckets[Math.floor(h/4)]+=c);
+  const maxBucket=Math.max(...hourBuckets,1);
+  // Warnings
+  const warnings=[];
+  const last3Days=hist.slice(-3).map(d=>{const qs=S.quests||[];return qs.filter(q=>q.cat==='learn').length>0;});
+  if((catStats.learn||0)<(catStats.sport||0)/2&&(catStats.sport||0)>5)warnings.push(`⚠ Du trainierst ${catStats.sport||0}x Sport aber nur ${catStats.learn||0}x Lernen. Balance deinen Grind!`);
+  if((catStats.good||0)<5&&S.totalDone>20)warnings.push('⚠ Nur '+( catStats.good||0)+' Gute-Tat-Quests — steigere deinen gesellschaftlichen Impact!');
+  const streak=S.streak||0;
+  // AI-style analysis
+  const tips=[];
+  if(streak>=7)tips.push(`🔥 Dein ${streak}-Tage Streak ist stark! Halte das Momentum.`);
+  if((catStats.sport||0)>=(catStats.habit||0)*2)tips.push('💪 Sport-fokussiert — erwäge mehr Recovery und Schlaf-Quests.');
+  if((S.penalties||0)>3)tips.push('⚠ Mehrere Penalties — versuche schwierige Quests früher am Tag zu erledigen.');
+  if(peakHour>0&&timeLog.length>10)tips.push(`⏰ Du bist am produktivsten gegen ${peakHour}:00 Uhr. Plane Quests zu dieser Zeit.`);
+  if((S.dungeonRuns||0)===0&&S.totalDone>15)tips.push('🏰 Du hast noch keinen Dungeon gestartet — hohe XP-Chance verpassen!');
+  cont.innerHTML=`
+    ${warnings.map(w=>`<div class="cat-warning">${w}</div>`).join('')}
+    <div class="insight-card">
+      <div class="insight-icon">⏰</div>
+      <div class="insight-title">Produktivste Tageszeit</div>
+      <div class="insight-val">${timeLog.length>5?`${peakHour}:00 Uhr`:'Noch zu wenig Daten'}</div>
+      ${timeLog.length>5?`<div class="hour-bars">${hourBuckets.map(b=>`<div class="hour-bar" style="height:${Math.round((b/maxBucket)*100)}%;background:var(--p);border-radius:2px 2px 0 0"></div>`).join('')}</div><div class="hour-lbl">${hourNames.map(n=>`<div class="hour-lbl-item">${n}</div>`).join('')}</div>`:'<div style="font-size:9px;color:var(--t3);margin-top:4px">Schließe mehr Quests ab um Daten zu sammeln.</div>'}
+    </div>
+    ${tips.map(tip=>`<div class="insight-card"><div class="insight-text">${tip}</div></div>`).join('')}
+    <div class="insight-card">
+      <div class="insight-icon">📊</div>
+      <div class="insight-title">Kategorie-Analyse</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:5px;margin-top:6px">
+        ${Object.entries(catStats).filter(([,v])=>v>0).map(([k,v])=>`<div style="background:var(--bg3);border-radius:5px;padding:7px;text-align:center"><div style="font-size:16px">${CAT_ICONS[k]||'⭐'}</div><div style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--text)">${v}</div><div style="font-size:8px;color:var(--t2)">${CAT_LABELS[k]||k}</div></div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ═══ CHARTS ═══
+function drawXPChart(){
+  const canvas=document.getElementById('xpChart');if(!canvas)return;
+  const ctx=canvas.getContext&&canvas.getContext('2d');if(!ctx)return;const W=canvas.offsetWidth||380,H=85;canvas.width=W;canvas.height=H;ctx.clearRect(0,0,W,H);
+  const hist=S.xpHistory||[];const last14=hist.slice(-14);
+  if(!last14.length){ctx.fillStyle='rgba(148,163,184,.2)';ctx.font='10px Rajdhani';ctx.textAlign='center';ctx.fillText('Daten folgen nach dem ersten Tag',W/2,H/2);return;}
+  const max=Math.max(...last14.map(d=>d.xp),1);const pad=14,cW=W-pad*2,cH=H-pad*2;
+  ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;for(let i=0;i<=3;i++){const y=pad+cH-(i/3)*cH;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke();}
+  const pts=last14.map((d,i)=>({x:pad+i*(cW/(last14.length-1||1)),y:pad+cH-(d.xp/max)*cH}));
+  const gr=ctx.createLinearGradient(0,0,W,0);gr.addColorStop(0,'#7c3aed');gr.addColorStop(1,'#06b6d4');
+  ctx.strokeStyle=gr;ctx.lineWidth=2;ctx.lineJoin='round';ctx.beginPath();pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.stroke();
+  const fg=ctx.createLinearGradient(0,0,0,H);fg.addColorStop(0,'rgba(124,58,237,.2)');fg.addColorStop(1,'transparent');
+  ctx.fillStyle=fg;ctx.beginPath();pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,H);ctx.lineTo(pts[0].x,H);ctx.closePath();ctx.fill();
+  pts.forEach(p=>{ctx.fillStyle='#7c3aed';ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fill();});
+}
+function drawPieChart(){
+  const canvas=document.getElementById('pieChart');if(!canvas)return;const ctx=canvas.getContext&&canvas.getContext('2d');if(!ctx)return;
+  const stats=S.catStats||{};const data=[{lbl:'Sport',val:stats.sport||0,col:'#ef4444'},{lbl:'Gewohnheit',val:stats.habit||0,col:'#22c55e'},{lbl:'Lernen',val:stats.learn||0,col:'#06b6d4'},{lbl:'Gute Tat',val:stats.good||0,col:'#f59e0b'},{lbl:'Custom',val:stats.custom||0,col:'#a855f7'}].filter(d=>d.val>0);
+  ctx.clearRect(0,0,100,100);if(!data.length){ctx.fillStyle='rgba(148,163,184,.15)';ctx.beginPath();ctx.arc(50,50,42,0,Math.PI*2);ctx.fill();return;}
+  const total=data.reduce((a,d)=>a+d.val,0);let angle=-Math.PI/2;
+  data.forEach(d=>{const s=(d.val/total)*Math.PI*2;ctx.beginPath();ctx.moveTo(50,50);ctx.arc(50,50,42,angle,angle+s);ctx.closePath();ctx.fillStyle=d.col;ctx.fill();ctx.strokeStyle='rgba(7,6,15,.5)';ctx.lineWidth=2;ctx.stroke();angle+=s;});
+  document.getElementById('pieLegend').innerHTML=data.map(d=>`<div class="pie-item"><div class="pie-dot" style="background:${d.col}"></div><span>${d.lbl}: ${d.val}</span></div>`).join('');
+}
+function drawHeatmap(){
+  const cont=document.getElementById('heatmapGrid');if(!cont)return;
+  const hist=S.history||[];const histMap={};hist.forEach(h=>{const d=h.date?h.date.split('T')[0]:null;if(d)histMap[d]=h.ok?3:1;});
+  const weeks=15;const now=new Date();now.setHours(0,0,0,0);
+  let html='<div class="hm-grid">';
+  for(let w=0;w<weeks;w++){html+='<div class="hm-week">';for(let d=0;d<7;d++){const date=new Date(now);date.setDate(now.getDate()-(weeks-1-w)*7-(6-d));const ds=date.toISOString().split('T')[0];const val=histMap[ds]||0;const isToday=ds===now.toISOString().split('T')[0];html+=`<div class="hm-day hm-${isToday?4:val}" title="${ds}" style="${isToday?'border:1px solid var(--p)':''}"></div>`;}html+='</div>';}
+  cont.innerHTML=html+'</div>';
+}
+
+// ═══ TITLES CHECK ═══
+function checkTitles(){(S.titles||[]).forEach(t=>{if(t.unlocked)return;const def=TITLES_DEF.find(d=>d.id===t.id);if(def&&def.cond(S)){t.unlocked=true;showTitleUnlock(def);}});}
+function showTitleUnlock(def){document.getElementById('titleIcon').textContent=def.icon;document.getElementById('titleName').textContent=def.name;document.getElementById('titleDesc').textContent=def.desc;setTimeout(()=>document.getElementById('titleOv').classList.add('show'),600);}
+
+// ═══ DAY END ═══
+function dayEnd(){
+  const missed=S.quests.filter(q=>!q.done).length;
+  const todayXP=S.quests.filter(q=>q.done).reduce((a,q)=>a+q.xp,0);
+  const hist=S.history||[];
+  S.xpHistory=(S.xpHistory||[]).concat({date:today(),xp:todayXP});if(S.xpHistory.length>30)S.xpHistory=S.xpHistory.slice(-30);
+  // Supplement streaks
+  const allSuppsDone=S.supplements.length>0&&S.supplements.every(s=>s.done);
+  if(!allSuppsDone&&S.supplements.length>0)S.suppStreaks=0;
+  if(missed>0){
+    const skip=(S.penaltySkip||0)>0||(isItemActive('time_freeze'));
+    if(skip){if(isItemActive('time_freeze')){S.activeItem=null;S.activeItemExpires=null;}else S.penaltySkip--;hist.push({date:new Date().toISOString(),ok:false,skipped:true,xp:todayXP});}
+    else{hist.push({date:new Date().toISOString(),ok:false,xp:todayXP});S.streak=0;S.penalties=(S.penalties||0)+1;const red=hasSkill('recovery')?0.5:1;S.xp=Math.max(0,S.xp-Math.round(missed*15*red));const msgs=['Du hast deine Pflicht nicht erfüllt.','Hunter, Pflichten wurden vernachlässigt.','Das System registrierte dein Versagen.'];document.getElementById('penMsg').textContent=msgs[Math.floor(Math.random()*msgs.length)];document.getElementById('penDbf').textContent=`Streak verloren. ${missed} offen. −${Math.round(missed*15*red)} XP.`;document.getElementById('penBanner').classList.add('show');document.getElementById('penBannerTxt').textContent=`${missed} Quest(s) nicht erledigt.`;document.getElementById('penOv').classList.add('show');}
+  } else {
+    hist.push({date:new Date().toISOString(),ok:true,xp:todayXP});S.streak=(S.streak||0)+1;if(S.streak>(S.longest||0))S.longest=S.streak;document.getElementById('penBanner').classList.remove('show');if([7,14,30].includes(S.streak))S.penaltySkip=(S.penaltySkip||0)+1;
+  }
+  S.history=hist;genQuests();addRecurringToday();if(Math.random()<0.22)genBossQuest();checkTitles();
+  if(dungeonIV){clearInterval(dungeonIV);S.dungeonActive=false;}
+  saveS();renderAll();
+}
+
+// ═══ OVERLAYS ═══
+function showRw(name,xp,title,msg,sub,bonus){
+  document.getElementById('rwTitle').textContent=title||'✅ QUEST ABGESCHLOSSEN';
+  document.getElementById('rwXP').textContent=xp>0?'+'+xp+' XP':'';
+  document.getElementById('rwMsg').textContent=msg||`"${name}" erledigt!`;
+  document.getElementById('rwBonus').textContent=bonus||'';
+  document.getElementById('rwOv').classList.add('show');
+}
+function showRankUp(rk){document.getElementById('rankupR').textContent=rk.r;document.getElementById('rankupR').style.color=rk.c;document.getElementById('rankupSub').textContent=`Du hast den ${rk.r}-Rang erreicht!`;setTimeout(()=>document.getElementById('rankupOv').classList.add('show'),500);}
+function clov(id){document.getElementById(id).classList.remove('show');}
+
+// ═══ NAV ═══
+function msw(id,btn){
+  document.querySelectorAll('.mpanel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.mnb').forEach(b=>b.classList.remove('on'));
+  const p=document.getElementById('mp-'+id);if(p)p.classList.add('on');
+  if(btn)btn.classList.add('on');
+  if(id==='streaks')rendStreaks();
+  if(id==='special')rendSpecial();
+  if(id==='stats')rendStats();
+  if(id==='body'){rendMuscles();updMuscleSVG();rendCardio();updCardioSVG();rendMeasures();}
+  if(id==='boss')rendBoss();
+  if(id==='dungeon')rendDungeon();
+  if(id==='skills')rendSkills();
+  if(id==='learned')rendLearned();
+  if(id==='goals')rendGoals();
+  if(id==='inventory')rendInventory();
+  if(id==='season')rendSeason();
+  if(id==='supps')rendSupps();
+  if(id==='templates'){rendTemplates();initRQDays();}
+}
+function bsw(id,btn){
+  document.querySelectorAll('.bpanel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.btab').forEach(b=>b.classList.remove('on'));
+  document.getElementById('bp-'+id).classList.add('on');btn.classList.add('on');
+  if(id==='measures')rendMeasures();
+}
+
+// ═══ TIMER / DATE ═══
+function startTimer(){
+  setInterval(()=>{
+    const now=new Date(),end=new Date();end.setHours(hasSkill('night_owl')?1:23,59,59,0);if(end<now)end.setDate(end.getDate()+1);
+    const d=end-now,h=Math.floor(d/3600000),m=Math.floor(d%3600000/60000),s=Math.floor(d%60000/1000);
+    const tel=document.getElementById('timerEl');
+    if(tel){tel.textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;tel.classList.toggle('warn',h<2);}
+  },1000);
+}
+function startWarningCheck(){
+  setInterval(()=>{const h=new Date().getHours();const open=S.quests?S.quests.filter(q=>!q.done).length:0;const wb=document.getElementById('warnBanner');if(!wb)return;if(h>=20&&open>0){wb.classList.add('show');document.getElementById('warnTxt').textContent=`${open} Quest${open!==1?'s':''} noch offen!`;}else wb.classList.remove('show');},60000);
+}
+function updateDate(){const d=new Date(),days=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];const el=document.getElementById('dateDisp');if(el)el.textContent=days[d.getDay()]+', '+d.toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'});}
+
+// ═══ EXPORT / IMPORT ═══
+function exportData(){const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`sl_${S.name||'hunter'}_${today()}.json`;a.click();}
+function importData(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{S=JSON.parse(ev.target.result);saveS();renderAll();}
+    catch(err){console.error('Import Fehler',err);}
+  };
+  r.readAsText(f);
+}
+function resetAll(){
+  try{window.storage.delete(LS);}catch(e){}
+  S=freshState();genQuests();S.lastQuestDate=today();saveS();renderAll();
+}
+
+// ═══ RENDER ALL ═══
+function safeRun(fn,label){try{fn();}catch(e){console.error('Render-Fehler in '+label,e);}}
+function renderAll(){
+  [['updProfile',updProfile],['rendMood',rendMood],['rendQuests',rendQuests],
+   ['rendSpecial',rendSpecial],['rendBoss',rendBoss],['rendSupps',rendSupps],
+   ['rendMuscles',rendMuscles],['updMuscleSVG',updMuscleSVG],['rendCardio',rendCardio],
+   ['updCardioSVG',updCardioSVG],['rendMeasures',rendMeasures],['rendGoals',rendGoals],
+   ['rendStreaks',rendStreaks],['rendStats',rendStats],['rendSkills',rendSkills],
+   ['rendLearned',rendLearned],['rendInventory',rendInventory],['rendSeason',rendSeason],
+   ['rendTemplates',rendTemplates],['initRQDays',initRQDays]
+  ].forEach(function(pair){safeRun(pair[1],pair[0]);});
+}
+
+// ═══ INIT ═══
+initParticles();
+initAvatarGrid();
+S=freshState();
+prevRank=getRank();
+
+// Vor dem Schließen noch schnell sichern
+window.addEventListener('beforeunload',function(){
+  try{localSet(JSON.stringify(S));}catch(e){}
+});
+// Beim Zurückkehren auf die Seite: ausstehende Speicherung abschließen
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='hidden'&&pendingSave){clearTimeout(saveTimer);pendingSave=false;pushCloud();}
+});
+
+(async function(){
+  const ok=await initCloud();
+  if(!ok){await useLocalOnly();return;}
+  if(sbUser){await bootWithCloud();}
+  else{showAuth();authMode('login');}
+})();
+</script>
+</body>
+</html>
