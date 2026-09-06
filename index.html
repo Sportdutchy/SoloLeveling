@@ -146,6 +146,7 @@ button,.mnb,.qchk,.av-btn,.pf-btn,.char-opt,.theme-btn,.mb-sm,.wt-btn{
 }
 /* Sichere Bereiche bei Geräten mit Notch */
 #app{padding-left:max(0px,env(safe-area-inset-left));padding-right:max(0px,env(safe-area-inset-right));padding-bottom:max(14px,env(safe-area-inset-bottom));}
+#ob,#auth{padding-top:max(10px,env(safe-area-inset-top));}
 canvas{max-width:100%;}
 
 body.theme-red{--p:#dc2626;--p2:#991b1b;--c:#f97316;--pb:rgba(220,38,38,0.28);}
@@ -166,7 +167,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 @keyframes pfloat{0%{transform:translateY(100vh);opacity:0;}10%{opacity:.5;}90%{opacity:.2;}100%{transform:translateY(-10vh) translateX(var(--dx));opacity:0;}}
 
 /* ── ONBOARDING ── */
-#ob{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;text-align:center;}
+#ob{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:calc(20px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));text-align:center;}
 .app-logo{display:block;}
 .app-logo svg{display:block;width:100%;height:100%;}
 .ob-mark{width:112px;height:112px;margin:0 auto 14px;filter:drop-shadow(0 6px 22px rgba(124,58,237,.4));}
@@ -213,6 +214,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 /* ── APP ── */
 #app{display:none;position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:0 12px 60px;}
+
 
 /* ── HEADER ── */
 .hdr{padding:10px 0 9px;border-bottom:1px solid var(--pb);margin-bottom:9px;}
@@ -290,10 +292,10 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .mnb:active{transform:scale(.995);}
 .mnb.on{background:linear-gradient(90deg,rgba(124,58,237,.3),rgba(124,58,237,.06));color:#fff;border-color:rgba(124,58,237,.4);}
 .mnb .vf-badge{margin:0;}
-#app{padding-bottom:calc(78px + env(safe-area-inset-bottom));}
+#app{padding-top:max(10px,env(safe-area-inset-top));padding-bottom:calc(78px + env(safe-area-inset-bottom));}
 #app.bare .hdr,#app.bare .profile,#app.bare .greet,#app.bare .mood-banner,
 #app.bare .warn-banner,#app.bare .pen-banner,#app.bare .rival-banner{display:none !important;}
-#app.bare{padding-top:10px;}
+
 .mpanel{display:none;}.mpanel.on{display:block;}
 
 /* ── TOPBAR ── */
