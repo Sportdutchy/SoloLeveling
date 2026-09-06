@@ -257,26 +257,43 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .rival-banner{background:linear-gradient(135deg,rgba(239,68,68,.07),rgba(124,58,237,.05));border:1px solid rgba(239,68,68,.22);border-radius:7px;padding:8px 12px;margin-bottom:9px;display:flex;align-items:center;gap:10px;}
 .rival-vs{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:2px;color:var(--r);}
 
-/* ── NAV (ausklappbar) ── */
-.mnav-wrap{margin-bottom:8px;}
-.mnav-toggle{width:100%;display:flex;align-items:center;gap:9px;background:var(--bg2);border:1px solid var(--pb);border-radius:9px;padding:10px 13px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.2px;cursor:pointer;text-transform:uppercase;transition:border-radius .16s;}
-.mnav-toggle:active{transform:scale(.995);}
-.nv-ic{font-size:16px;line-height:1;}
-.nv-nm{flex:1;text-align:left;}
-.nv-hint{font-size:9px;color:var(--t3);letter-spacing:1.6px;}
-.nv-arrow{font-size:9px;color:var(--t2);transition:transform .2s;}
-.mnav-wrap.open .nv-arrow{transform:rotate(180deg);}
-.mnav-wrap.open .mnav-toggle{border-radius:9px 9px 0 0;border-bottom-color:transparent;}
-.mnav-panel{display:none;background:var(--bg2);border:1px solid var(--pb);border-top:none;border-radius:0 0 9px 9px;padding:4px 8px 10px;}
-.mnav-wrap.open .mnav-panel{display:block;animation:navIn .16s ease;}
-@keyframes navIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
-.nv-grp{font-size:9px;letter-spacing:1.8px;color:var(--t3);font-weight:700;margin:9px 3px 6px;}
-.nv-row{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
-.mnb{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;padding:8px 3px;background:rgba(255,255,255,.03);border:1px solid transparent;border-radius:8px;color:var(--t2);font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:.6px;cursor:pointer;transition:all .14s;text-transform:uppercase;text-align:center;line-height:1.1;}
-.mnb .nb-ic{font-size:17px;line-height:1;}
-.mnb.on{background:linear-gradient(135deg,rgba(124,58,237,.36),rgba(6,182,212,.16));color:#fff;border-color:rgba(124,58,237,.45);}
-.mnb:hover:not(.on){color:var(--text);background:rgba(255,255,255,.06);}
-.mnb .vf-badge{position:absolute;top:4px;right:5px;margin:0;}
+/* ── UNTERE REITERLEISTE ── */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:80;display:grid;grid-template-columns:repeat(5,1fr);
+  align-items:end;gap:3px;padding:5px 5px calc(5px + env(safe-area-inset-bottom));
+  background:rgba(10,8,20,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--pb);box-shadow:0 -6px 22px rgba(0,0,0,.5);}
+.tb{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  min-height:50px;padding:5px 2px;background:transparent;border:1px solid transparent;border-radius:10px;
+  color:var(--t3);font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:.6px;
+  text-transform:uppercase;cursor:pointer;transition:color .15s,background .15s;}
+.tb-ic{font-size:20px;line-height:1;filter:grayscale(.6) opacity(.75);transition:filter .15s,transform .15s;}
+.tb.on{color:#fff;background:linear-gradient(180deg,rgba(124,58,237,.32),rgba(124,58,237,.1));border-color:rgba(124,58,237,.42);}
+.tb.on .tb-ic{filter:none;transform:translateY(-1px) scale(1.08);}
+.tb.mid{margin-top:-14px;border-radius:14px;background:linear-gradient(180deg,rgba(19,16,42,.98),rgba(10,8,20,.98));border-color:var(--pb);}
+.tb.mid .tb-ic{font-size:25px;}
+.tb.mid.on{background:linear-gradient(180deg,rgba(124,58,237,.5),rgba(124,58,237,.16));border-color:rgba(124,58,237,.6);box-shadow:0 0 18px rgba(124,58,237,.4);}
+.tb-badge{position:absolute;top:3px;left:calc(50% + 5px);min-width:16px;height:16px;padding:0 4px;border-radius:8px;
+  background:var(--r);color:#fff;font-family:'Orbitron',monospace;font-size:9px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(239,68,68,.5);}
+.tb-badge:empty{display:none;}
+
+.nv-grp{font-size:9px;letter-spacing:1.8px;color:var(--t3);font-weight:700;margin:12px 3px 5px;}
+.nv-grp:first-child{margin-top:2px;}
+.nv-row{display:flex;flex-direction:column;gap:4px;}
+.mnb{position:relative;width:100%;display:flex;align-items:center;gap:11px;
+  min-height:40px;padding:0 12px;background:rgba(255,255,255,.03);border:1px solid transparent;border-radius:8px;
+  color:var(--text);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:.8px;
+  cursor:pointer;transition:all .14s;text-transform:uppercase;text-align:left;}
+.mnb .nb-ic{font-size:17px;line-height:1;width:22px;text-align:center;flex:0 0 auto;}
+.mnb .nb-nm{flex:1;min-width:0;}
+.mnb::after{content:'›';color:var(--t3);font-size:16px;line-height:1;}
+.mnb:active{transform:scale(.995);}
+.mnb.on{background:linear-gradient(90deg,rgba(124,58,237,.3),rgba(124,58,237,.06));color:#fff;border-color:rgba(124,58,237,.4);}
+.mnb .vf-badge{margin:0;}
+#app{padding-bottom:calc(78px + env(safe-area-inset-bottom));}
+#app.bare .hdr,#app.bare .profile,#app.bare .greet,#app.bare .mood-banner,
+#app.bare .warn-banner,#app.bare .pen-banner,#app.bare .rival-banner{display:none !important;}
+#app.bare{padding-top:10px;}
 .mpanel{display:none;}.mpanel.on{display:block;}
 
 /* ── TOPBAR ── */
@@ -738,6 +755,12 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .gm-dmg{font-family:'Orbitron',monospace;font-size:11px;color:var(--gold);white-space:nowrap;}
 .gd-win{background:linear-gradient(135deg,rgba(34,197,94,.14),rgba(245,158,11,.08));border:1px solid rgba(34,197,94,.35);border-radius:11px;padding:14px;margin-bottom:11px;text-align:center;}
 .gd-claim{width:100%;margin-top:10px;background:linear-gradient(135deg,var(--gold),#b45309);border:none;border-radius:7px;padding:11px;color:#1a1210;font-family:'Orbitron',monospace;font-size:11px;font-weight:900;letter-spacing:2px;cursor:pointer;}
+.qchk-ic{font-size:16px;line-height:1;}
+.step-in{display:flex;gap:5px;margin-top:6px;}
+.step-fi{flex:1;min-width:0;background:var(--bg3);border:1px solid var(--pb);border-radius:6px;padding:7px 9px;color:var(--text);font-family:'Orbitron',monospace;font-size:12px;outline:none;}
+.step-fi:focus{border-color:var(--p);}
+.step-btn{flex:0 0 auto;background:rgba(124,58,237,.16);border:1px solid rgba(124,58,237,.38);border-radius:6px;padding:7px 11px;color:#c4b5fd;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;cursor:pointer;}
+.step-btn:active{transform:scale(.97);}
 .q-tag{display:inline-block;font-family:'Rajdhani',sans-serif;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:middle;}
 .q-tag.core{background:rgba(239,68,68,.16);border:1px solid rgba(239,68,68,.35);color:#fca5a5;}
 .q-tag.reg{background:rgba(6,182,212,.14);border:1px solid rgba(6,182,212,.32);color:#67e8f9;}
@@ -1086,12 +1109,6 @@ c7 -45 18 -100 26 -121 9 -27 13 -73 11 -140 l-2 -100 83 -83 c82 -81 98 -109
       <button class="ob-btn" style="margin-top:4px" onclick="obNext(2)">WEITER →</button>
     </div>
     <div class="ob-step" id="ob2">
-      <div class="ob-lbl">Wähle dein Symbol</div>
-      <div class="avatar-grid" id="avatarGrid"></div>
-      <button class="ob-btn" onclick="obNext(3)">WEITER →</button>
-      <button class="ob-skip" onclick="obNext(3)">Überspringen</button>
-    </div>
-    <div class="ob-step" id="ob3">
       <div class="ob-lbl">Wähle dein Theme</div>
       <div class="theme-grid">
         <div class="theme-btn sel" onclick="setTheme('',this)" style="background:rgba(124,58,237,.2);border-color:#7c3aed;color:#a78bfa"><div style="font-size:16px;margin-bottom:2px">💜</div>Lila</div>
@@ -1100,66 +1117,66 @@ c7 -45 18 -100 26 -121 9 -27 13 -73 11 -140 l-2 -100 83 -83 c82 -81 98 -109
         <div class="theme-btn" onclick="setTheme('green',this)" style="background:rgba(22,163,74,.2);border-color:rgba(22,163,74,.4);color:#86efac"><div style="font-size:16px;margin-bottom:2px">💚</div>Grün</div>
         <div class="theme-btn" onclick="setTheme('gold',this)" style="background:rgba(217,119,6,.2);border-color:rgba(217,119,6,.4);color:#fcd34d"><div style="font-size:16px;margin-bottom:2px">💛</div>Gold</div>
       </div>
-      <button class="ob-btn" onclick="obNext(4)">WEITER →</button>
+      <button class="ob-btn" onclick="obNext(3)">WEITER →</button>
     </div>
-    <div class="ob-step" id="ob4">
+    <div class="ob-step" id="ob3">
       <div class="ob-lbl">Worauf willst du hinarbeiten?</div>
       <div class="ob-sub">Mehrfachauswahl. Danach richten sich deine Tagesquests.</div>
       <div class="pf-grid" id="pfGoals"></div>
-      <button class="ob-btn" onclick="obNext(5)">WEITER →</button>
+      <button class="ob-btn" onclick="obNext(4)">WEITER →</button>
     </div>
-    <div class="ob-step" id="ob5">
+    <div class="ob-step" id="ob4">
       <div class="ob-lbl">Willst du dir etwas abgewöhnen?</div>
       <div class="ob-sub">Optional. Ausgewähltes wird zum festen Tagesquest.</div>
       <div class="pf-grid" id="pfQuits"></div>
       <div class="pf-note" id="pfQuitNote"></div>
-      <button class="ob-btn" onclick="obNext(6)">WEITER →</button>
-      <button class="ob-skip" onclick="P().quits=[];renderProfilePickers();obNext(6)">Nichts davon</button>
+      <button class="ob-btn" onclick="obNext(5)">WEITER →</button>
+      <button class="ob-skip" onclick="P().quits=[];renderProfilePickers();obNext(5)">Nichts davon</button>
     </div>
-    <div class="ob-step" id="ob6">
+    <div class="ob-step" id="ob5">
       <div class="ob-lbl">Wie viel Zeit hast du am Tag?</div>
       <div class="pf-row" id="pfTime"></div>
       <div class="ob-lbl" style="margin-top:14px">Wie trainiert bist du?</div>
       <div class="pf-row" id="pfLevel"></div>
       <div class="ob-hint" style="margin-top:10px">Bestimmt, wie fordernd deine Sport-Quests ausfallen.</div>
-      <button class="ob-btn" onclick="obNext(7)">WEITER →</button>
+      <button class="ob-btn" onclick="obNext(6)">WEITER →</button>
     </div>
-    <div class="ob-step" id="ob7">
+    <div class="ob-step" id="ob6">
       <div class="ob-lbl">Wo und womit trainierst du?</div>
       <div class="ob-sub">Mehrfachauswahl. Quests, die du nicht umsetzen kannst, tauchen gar nicht erst auf.</div>
       <div class="pf-grid" id="pfEquip"></div>
       <div class="ob-hint">Nichts ausgewählt = alles erlaubt.</div>
-      <button class="ob-btn" onclick="obNext(9)">WEITER →</button>
+      <button class="ob-btn" onclick="obNext(7)">WEITER →</button>
     </div>
-    <div class="ob-step" id="ob8">
+    <div class="ob-step" id="ob7">
       <div class="ob-lbl">Wie viel Wasser am Tag?</div>
       <div class="ob-sub">Kommt jeden Tag als feste Quest. Je mehr du dir vornimmst, desto mehr XP gibt sie.</div>
       <div class="ob-hint" style="margin-bottom:10px" id="waterHint"></div>
       <div class="pf-row" id="pfWater"></div>
-      <button class="ob-btn" onclick="obNext(9)">WEITER →</button>
+      <button class="ob-btn" onclick="obNext(8)">WEITER →</button>
     </div>
-    <div class="ob-step" id="ob9">
+    <div class="ob-step" id="ob8">
       <div class="ob-lbl">Wann bist du am stärksten?</div>
       <div class="pf-grid" id="pfRhythm"></div>
       <div class="ob-lbl" style="margin-top:14px">Wann endet dein Tag?</div>
       <div class="pf-row" id="pfDayEnd"></div>
       <div class="ob-hint" style="margin-top:10px">Bis dahin läuft der Countdown — danach gibt es Penalty.</div>
-      <button class="ob-btn" onclick="obNext(10)">WEITER →</button>
+      <button class="ob-btn" onclick="obNext(9)">WEITER →</button>
     </div>
-    <div class="ob-step" id="ob10">
+    <div class="ob-step" id="ob9">
       <div class="ob-lbl">Wie soll das System mit dir reden?</div>
       <div class="ob-sub">Gilt für Penalties, Erinnerungen und Quest-Meldungen.</div>
       <div class="pf-grid" id="pfTone"></div>
-      <button class="ob-btn" onclick="obNext(11)">WEITER →</button>
+      <button class="ob-btn" onclick="obNext(10)">WEITER →</button>
     </div>
-    <div class="ob-step" id="ob11">
+    <div class="ob-step" id="ob10">
       <div class="ob-lbl">Rival einsetzen (optional)</div>
       <input class="ob-inp" id="rivalInp" placeholder="RIVAL-NAME..." maxlength="20" autocomplete="off" style="margin-bottom:8px"/>
       <div style="font-size:10px;color:var(--t2);margin-bottom:12px;">Dein Rival ist immer etwas stärker. Er treibt dich an.</div>
-      <button class="ob-btn" onclick="obNext(12)">WEITER →</button>
-      <button class="ob-skip" onclick="S.rivalName='';obNext(12)">Ohne Rival starten</button>
+      <button class="ob-btn" onclick="obNext(11)">WEITER →</button>
+      <button class="ob-skip" onclick="S.rivalName='';obNext(11)">Ohne Rival starten</button>
     </div>
-    <div class="ob-step" id="ob12">
+    <div class="ob-step" id="ob11">
       <div class="ob-lbl">Dein Protokoll</div>
       <div class="ob-sub">So richtet das System deine Tage ein. Alles später unter Stats → Profil änderbar.</div>
       <div id="obSummary"></div>
@@ -1332,18 +1349,9 @@ c7 -45 18 -100 26 -121 9 -27 13 -73 11 -140 l-2 -100 83 -83 c82 -81 98 -109
     <div style="font-family:'Orbitron',monospace;font-size:14px;font-weight:700" id="rivalXPDisp" style="color:var(--r)">0 XP</div>
   </div>
 
-  <div class="mnav-wrap" id="mnavWrap">
-    <button class="mnav-toggle" onclick="toggleNav()">
-      <span class="nv-ic" id="navCurIc">⚔</span>
-      <span class="nv-nm" id="navCurNm">Daily</span>
-      <span class="nv-hint">Menü</span>
-      <span class="nv-arrow">▼</span>
-    </button>
-    <div class="mnav-panel" id="mnavPanel"></div>
-  </div>
 
   <!-- DAILY -->
-  <div class="mpanel on" id="mp-daily">
+  <div class="mpanel" id="mp-daily">
     <div class="daybar">
       <span class="daydate" id="dateDisp"></span>
       <div class="prog-t"><div class="prog-f" id="progF" style="width:0%"></div></div>
@@ -1422,12 +1430,11 @@ c7 -45 18 -100 26 -121 9 -27 13 -73 11 -140 l-2 -100 83 -83 c82 -81 98 -109
   </div>
 
   <!-- DUNGEON -->
-  <div class="mpanel" id="mp-dungeon">
-    <div class="sechd"><div class="sectitle">Dungeon Modus</div></div>
-    <div id="dungeonContent"></div>
+  <!-- INVENTORY -->
+  <div class="mpanel" id="mp-more">
+    <div id="morePanel"></div>
   </div>
 
-  <!-- INVENTORY -->
   <div class="mpanel" id="mp-inventory">
     <div class="sechd"><div class="sectitle">Inventar & Items</div></div>
     <div style="font-size:10px;color:var(--t2);margin-bottom:10px;">Kaufe Items mit XP und setze sie strategisch ein. Dein XP-Guthaben: <span style="color:var(--gold);font-family:'Orbitron',monospace" id="invXPDisp">0</span></div>
@@ -1450,7 +1457,7 @@ c7 -45 18 -100 26 -121 9 -27 13 -73 11 -140 l-2 -100 83 -83 c82 -81 98 -109
   </div>
 
   <!-- BODY -->
-  <div class="mpanel" id="mp-body">
+  <div class="mpanel on" id="mp-body">
     <div class="body-tabs">
       <button class="btab on" onclick="bsw('muscles',this)">Muskeln</button>
       <button class="btab" onclick="bsw('cardio',this)">Cardio</button>
@@ -1623,6 +1630,8 @@ c7 -45 18 -100 26 -121 9 -27 13 -73 11 -140 l-2 -100 83 -83 c82 -81 98 -109
 <!-- REWARD OVERLAY -->
 <div class="page-quote" id="quoteEl"></div>
 
+<nav class="tabbar" id="tabbar"></nav>
+
 <div class="overlay" id="rwOv">
   <div class="ovbox">
     <div style="font-size:28px;margin-bottom:4px" id="rwIcon">⭐</div>
@@ -1723,8 +1732,8 @@ const QUEST_POOL=[
 const BOSS_POOL=[{name:'5km laufen + 100 Liegestütze',xp:600,desc:'Alles in einer Session'},{name:'8h schlafen + vor 7 aufwachen',xp:400,desc:'Der schwerste Boss'},{name:'2h lernen + 1 Kapitel lesen',xp:500,desc:'Geist & Ausdauer'},{name:'3 verschiedenen Menschen helfen',xp:550,desc:'Tag voller guter Taten'},{name:'Kein Handy + kein Zucker + kein Alkohol',xp:700,desc:'Dreifache Askese'},{name:'Ganzkörper-Training + gesunde Ernährung',xp:650,desc:'Körper komplett fordern'}];
 const SPECIAL_DEF=[{id:'sp1',name:'7-Tage Sport Streak',desc:'7 Tage hintereinander trainieren',xp:700,done:false},{id:'sp2',name:'Wissens-Dungeon',desc:'Ein Buch vollständig lesen',xp:400,done:false},{id:'sp3',name:'30 Gute Taten',desc:'30 gute Taten diesen Monat',xp:1000,done:false},{id:'sp4',name:'Digitaler Entzug',desc:'7 Tage täglich unter 2h Handy',xp:600,done:false},{id:'sp5',name:'S-Rang Körper',desc:'Alle Muskelgruppen auf 30+ Sessions',xp:1500,done:false}];
 const GIFTS=[{days:3,icon:'🎯',name:'3-Tage Krieger',desc:'+15% XP für 24h'},{days:7,icon:'🏅',name:'Wochensieger',desc:'Penalty Skip Token'},{days:14,icon:'💎',name:'Eiserner Wille',desc:'+25% XP für 3 Tage'},{days:30,icon:'👑',name:'Legendärer Jäger',desc:'Permanenter +5% XP Boost'},{days:60,icon:'🔱',name:'Unsterblicher Hunter',desc:'S-Rang Skin + Spezialtitel'},{days:100,icon:'⚡',name:'Göttlicher Hunter',desc:'Alle Boni + Legendärer Status'}];
-const SKILLS_DEF=[{id:'iron_will',icon:'🛡',name:'Eiserner Wille',desc:'1x/Woche Streak-Schutz.',effect:'+Streak-Schutz',cost:500},{id:'xp_boost',icon:'⚡',name:'XP-Verstärker',desc:'+10% XP dauerhaft.',effect:'+10% XP',cost:800},{id:'boss_hunter',icon:'💀',name:'Boss-Jäger',desc:'+20% XP auf Boss-Quests.',effect:'+20% Boss-XP',cost:600},{id:'swap_master',icon:'🔄',name:'Tausch-Meister',desc:'2 Tausche pro Tag.',effect:'+1 Swap/Tag',cost:400},{id:'dungeon_expert',icon:'🏰',name:'Dungeon-Experte',desc:'+30% Bonus-XP bei Dungeons.',effect:'+30% Dungeon-XP',cost:700},{id:'recovery',icon:'💊',name:'Regeneration',desc:'Penalties −50% XP.',effect:'-50% Penalty XP',cost:550},{id:'good_heart',icon:'💛',name:'Gutes Herz',desc:'+25% XP Gute-Tat-Quests.',effect:'+25% Gute-Tat-XP',cost:350},{id:'scholar',icon:'📖',name:'Gelehrter',desc:'+20% XP Lern-Quests.',effect:'+20% Lern-XP',cost:350},{id:'athlete',icon:'🏃',name:'Athlet',desc:'+15% XP Sport-Quests.',effect:'+15% Sport-XP',cost:400},{id:'night_owl',icon:'🌙',name:'Nacht-Eule',desc:'Deadline verlängert auf 01:00 Uhr.',effect:'+2h Deadline',cost:300}];
-const TITLES_DEF=[{id:'first_step',icon:'👣',name:'Erste Schritte',desc:'10 Quests',cond:s=>s.totalDone>=10},{id:'week_warrior',icon:'⚔',name:'Wochen-Krieger',desc:'7-Tage Streak',cond:s=>s.longest>=7},{id:'scholar_t',icon:'📚',name:'Gelehrter Hunter',desc:'20 Lern-Quests',cond:s=>(s.catStats&&s.catStats.learn||0)>=20},{id:'good_soul',icon:'✨',name:'Gute Seele',desc:'15 Gute-Tat-Quests',cond:s=>(s.catStats&&s.catStats.good||0)>=15},{id:'iron_body',icon:'💪',name:'Eisen-Körper',desc:'30 Sport-Quests',cond:s=>(s.catStats&&s.catStats.sport||0)>=30},{id:'century',icon:'💯',name:'Centurion',desc:'100 Quests',cond:s=>s.totalDone>=100},{id:'s_rank_t',icon:'👑',name:'S-Rang Aufsteiger',desc:'S-Rang erreicht',cond:s=>levelFromXP(s.xp||0)>=40},{id:'dungeon_m',icon:'🏰',name:'Dungeon-Meister',desc:'10 Dungeon-Runs',cond:s=>(s.dungeonRuns||0)>=10},{id:'supplement_god',icon:'💊',name:'Supplement-König',desc:'30 Tage alle Supps genommen',cond:s=>(s.suppStreaks||0)>=30}];
+const SKILLS_DEF=[{id:'iron_will',icon:'🛡',name:'Eiserner Wille',desc:'1x/Woche Streak-Schutz.',effect:'+Streak-Schutz',cost:500},{id:'xp_boost',icon:'⚡',name:'XP-Verstärker',desc:'+10% XP dauerhaft.',effect:'+10% XP',cost:800},{id:'boss_hunter',icon:'💀',name:'Boss-Jäger',desc:'+20% XP auf Boss-Quests.',effect:'+20% Boss-XP',cost:600},{id:'swap_master',icon:'🔄',name:'Tausch-Meister',desc:'2 Tausche pro Tag.',effect:'+1 Swap/Tag',cost:400},{id:'recovery',icon:'💊',name:'Regeneration',desc:'Penalties −50% XP.',effect:'-50% Penalty XP',cost:550},{id:'good_heart',icon:'💛',name:'Gutes Herz',desc:'+25% XP Gute-Tat-Quests.',effect:'+25% Gute-Tat-XP',cost:350},{id:'scholar',icon:'📖',name:'Gelehrter',desc:'+20% XP Lern-Quests.',effect:'+20% Lern-XP',cost:350},{id:'athlete',icon:'🏃',name:'Athlet',desc:'+15% XP Sport-Quests.',effect:'+15% Sport-XP',cost:400},{id:'night_owl',icon:'🌙',name:'Nacht-Eule',desc:'Deadline verlängert auf 01:00 Uhr.',effect:'+2h Deadline',cost:300}];
+const TITLES_DEF=[{id:'first_step',icon:'👣',name:'Erste Schritte',desc:'10 Quests',cond:s=>s.totalDone>=10},{id:'week_warrior',icon:'⚔',name:'Wochen-Krieger',desc:'7-Tage Streak',cond:s=>s.longest>=7},{id:'scholar_t',icon:'📚',name:'Gelehrter Hunter',desc:'20 Lern-Quests',cond:s=>(s.catStats&&s.catStats.learn||0)>=20},{id:'good_soul',icon:'✨',name:'Gute Seele',desc:'15 Gute-Tat-Quests',cond:s=>(s.catStats&&s.catStats.good||0)>=15},{id:'iron_body',icon:'💪',name:'Eisen-Körper',desc:'30 Sport-Quests',cond:s=>(s.catStats&&s.catStats.sport||0)>=30},{id:'century',icon:'💯',name:'Centurion',desc:'100 Quests',cond:s=>s.totalDone>=100},{id:'s_rank_t',icon:'👑',name:'S-Rang Aufsteiger',desc:'S-Rang erreicht',cond:s=>levelFromXP(s.xp||0)>=40},{id:'supplement_god',icon:'💊',name:'Supplement-König',desc:'30 Tage alle Supps genommen',cond:s=>(s.suppStreaks||0)>=30}];
 const INVENTORY_DEF=[{id:'xp_potion',icon:'🧪',name:'Doppel-XP Trank',desc:'Nächste Quest gibt 2x XP.',rarity:'common',cost:150,type:'xp_double',effect:'2x XP auf nächste Quest'},{id:'streak_shield',icon:'🛡',name:'Streak-Schild',desc:'Schützt einmalig vor Streak-Verlust.',rarity:'rare',cost:300,type:'streak_shield',effect:'Streak-Schutz 1x'},{id:'boss_ticket',icon:'🎫',name:'Boss-Ticket',desc:'Sofort einen neuen Boss-Quest beschwören.',rarity:'rare',cost:250,type:'boss_summon',effect:'Boss sofort erscheinen'},{id:'xp_bomb',icon:'💣',name:'XP-Bombe',desc:'+500 XP sofort.',rarity:'epic',cost:800,type:'instant_xp',effect:'+500 XP direkt'},{id:'time_freeze',icon:'⏸',name:'Zeit-Anhalter',desc:'Tag ohne Penalty beenden — auch mit offenen Quests.',rarity:'epic',cost:600,type:'time_freeze',effect:'Kein Penalty heute'},{id:'legendary_boost',icon:'👑',name:'Legendärer Boost',desc:'+50% XP für den gesamten heutigen Tag.',rarity:'legendary',cost:1200,type:'day_boost',effect:'+50% XP ganzer Tag'}];
 const MOOD_DATA=[{emoji:'😴',lbl:'Müde',effect:'Quest-XP -10%',xpMod:0.9},{emoji:'😐',lbl:'Neutral',effect:'Normaler Tag',xpMod:1.0},{emoji:'💪',lbl:'Motiviert',effect:'+10% XP',xpMod:1.1},{emoji:'🔥',lbl:'On Fire',effect:'+20% XP',xpMod:1.2},{emoji:'😤',lbl:'Kampfbereit',effect:'+15% XP, Boss erscheint',xpMod:1.15}];
 const CAT_ICONS={sport:'💪',habit:'🌿',learn:'📚',good:'✨',custom:'⭐'};
@@ -2609,9 +2618,8 @@ function initParticles(){const c=document.getElementById('particles');for(let i=
 function setTheme(t,el){document.body.className=t?'theme-'+t:'';S.theme=t;if(typeof el!=='string'){document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}}
 
 // ═══ ONBOARDING ═══
-function initAvatarGrid(){document.getElementById('avatarGrid').innerHTML=AVATARS.map((a,i)=>`<div class="av-btn ${i===0?'sel':''}" onclick="selectAvatar('${a}',this)">${a}</div>`).join('');}
 function selectAvatar(a,el){S.avatar=a;document.querySelectorAll('.av-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
-const OB_STEPS=13;
+const OB_STEPS=12;
 function renderPips(){
   const el=document.getElementById('obProg');if(!el)return;
   let h='';for(let i=0;i<OB_STEPS;i++)h+='<div class="ob-pip'+(i<=obStep?' on':'')+'"></div>';
@@ -2664,11 +2672,11 @@ function renderProfilePickers(){
 function obNext(step){
   if(step===1){const n=document.getElementById('nameInp').value.trim();if(!n){document.getElementById('nameInp').style.borderColor='var(--r)';return;}S.name=n.toUpperCase();}
   if(step===1){if(!S.character)S.character=defaultChar();renderCharEditor();}
-  if(step===12){const ri=document.getElementById('rivalInp');const rn=ri?ri.value.trim():'';if(rn)S.rivalName=rn.toUpperCase();}
+  if(step===11){const ri=document.getElementById('rivalInp');const rn=ri?ri.value.trim():'';if(rn)S.rivalName=rn.toUpperCase();}
   if(step>=4)renderProfilePickers();
   document.getElementById('ob'+obStep).classList.remove('active');obStep=step;
   document.getElementById('ob'+obStep).classList.add('active');
-  if(step===12)renderObSummary();
+  if(step===11)renderObSummary();
   renderPips();
 }
 // ── Abschluss-Protokoll: zeigt, was das System aus den Antworten macht ──
@@ -2717,7 +2725,7 @@ function launchApp(){
   document.getElementById("appTitle").textContent="QUEST SYSTEM · "+S.name;
   var _pp2=document.getElementById("profilePortrait");if(_pp2)_pp2.innerHTML=portraitSVG(54);
   if(S.theme)document.body.className="theme-"+S.theme;
-  addRecurringToday();renderNav();renderAll();startTimer();updateDate();setDailyQuote();startWarningCheck();
+  addRecurringToday();renderNav();renderAll();msw(START_TAB);startTimer();updateDate();setDailyQuote();startWarningCheck();
 }
 function setDailyQuote(){document.getElementById('quoteEl').textContent=QUOTES[new Date().getDate()%QUOTES.length];}
 
@@ -2797,6 +2805,23 @@ const PROF_RHYTHM=[
  {id:'night',ic:'🌙',n:'Nachteule',d:'Abends am stärksten'},
  {id:'mixed',ic:'🔄',n:'Wechselnd',d:'Schichten, unregelmäßig'}
 ];
+// ── Tägliche Schritte: Anzahl eintragen, XP anteilig ──
+const STEP_TARGET=10000, STEP_XP=65, STEP_MAXF=1.5;
+function stepXP(n){return Math.max(1,Math.round((STEP_XP)*Math.min(STEP_MAXF,(n||0)/STEP_TARGET)));}
+function fmtNum(n){return (n||0).toLocaleString('de-DE');}
+function submitSteps(id){
+  const q=(S.quests||[]).find(function(x){return x.id===id;});
+  if(!q||q.done)return;
+  const inp=document.getElementById('st_'+id);
+  const n=Math.max(0,parseInt(String(inp&&inp.value||'').replace(/[^0-9]/g,''),10)||0);
+  if(!n){if(inp){inp.style.borderColor='var(--r)';inp.focus();}return;}
+  q.baseXP=q.baseXP||STEP_XP;
+  q.steps=n;
+  q.xp=stepXP(n);
+  grantQuest(q,' · '+fmtNum(n)+' Schritte');
+}
+function stepsKey(e,id){if(e.key==='Enter'){e.preventDefault();submitSteps(id);}}
+
 // ── Tägliches Wasserziel ──
 const PROF_WATER=[
  {id:'w1500',n:'1,5 L',ml:1500},{id:'w2000',n:'2,0 L',ml:2000},
@@ -2991,7 +3016,12 @@ function genQuests(){
         desc:'Über den Tag verteilt trinken'},
        {pinned:true,core:'water'});
 
-  // 1c) DEHN-QUEST — nur wenn gestern ein Sport-Quest erledigt wurde
+  // 1c) SCHRITTE — Anzahl eintragen, XP anteilig zum Ziel
+  take({name:fmtNum(STEP_TARGET)+' Schritte',cat:'sport',xp:STEP_XP,
+        desc:'Anzahl eintragen — die Hälfte bringt die halbe XP, mehr bringt mehr'},
+       {pinned:true,core:'steps',baseXP:STEP_XP});
+
+  // 1d) DEHN-QUEST — nur wenn gestern ein Sport-Quest erledigt wurde
   if(trainedYesterday())take(STRETCH_QUEST,{pinned:true,core:'stretch'});
 
   // 2) Gewohnheits-Quests — die sind der Kern
@@ -3678,6 +3708,7 @@ function rendQuests(){
     </div>`;
   });
   document.getElementById('questSections').innerHTML=html;
+  try{updTabBadges();}catch(e){}
 }
 function toggleCat(cat){
   S.collapsedCats[cat]=!S.collapsedCats[cat];
@@ -3689,14 +3720,20 @@ function toggleCat(cat){
 }
 function qCardHTML(q,sl){
   const effXP=applyXP(q.xp,q.cat);
+  const isSteps=q.core==='steps';
   return`<div class="qcard ${q.cat} ${q.done?'done':''}" id="qc_${q.id}">
-    <div class="qchk" onclick="togQ('${q.id}')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,8 6,13 14,3"/></svg>
+    <div class="qchk" onclick="${isSteps&&!q.done?`document.getElementById('st_${q.id}').focus()`:`togQ('${q.id}')`}">
+      ${isSteps&&!q.done?'<span class="qchk-ic">👟</span>':'<svg viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,8 6,13 14,3"/></svg>'}
     </div>
     <div class="qinfo">
       <div class="qname">${q.name}${q.core==='sport'?'<span class="q-tag core">Tagespflicht</span>':''}${q.core==='stretch'?'<span class="q-tag reg">Regeneration</span>':''}${q.recurring?'<span style="font-size:8px;color:var(--c);margin-left:5px">↻</span>':''}</div>
-      <div class="qmeta"><span class="qcat">${catLbl(q.cat)}</span><span class="qxp">+${effXP} XP${effXP!==q.xp?`<span style="color:var(--g);font-size:8px">(+${effXP-q.xp})</span>`:''}</span></div>
-      ${q.desc?`<div class="qdesc">${q.desc}</div>`:''}
+      <div class="qmeta"><span class="qcat">${catLbl(q.cat)}</span><span class="qxp">${isSteps&&!q.done?`bis +${applyXP(Math.round(STEP_XP*STEP_MAXF),q.cat)} XP`:`+${effXP} XP${effXP!==q.xp?`<span style="color:var(--g);font-size:8px">(+${effXP-q.xp})</span>`:''}`}</span></div>
+      ${q.desc&&!(isSteps&&q.done)?`<div class="qdesc">${q.desc}</div>`:''}
+      ${isSteps&&q.done?`<div class="qdesc">✓ ${fmtNum(q.steps)} Schritte eingetragen</div>`:''}
+      ${isSteps&&!q.done?`<div class="step-in">
+        <input class="step-fi" id="st_${q.id}" type="text" inputmode="numeric" placeholder="Schritte..." onkeydown="stepsKey(event,'${q.id}')" oninput="this.style.borderColor=''"/>
+        <button class="step-btn" onclick="submitSteps('${q.id}')">EINTRAGEN</button>
+      </div>`:''}
       ${q.note?`<div class="q-note">📝 ${q.note}</div>`:''}
       ${q.pendingVerify?`<div class="q-pend">⏳ wartet auf Bestätigung</div>`:''}
     </div>
@@ -3737,6 +3774,7 @@ function unchkQ(id){
   const lost=applyXP(q.xp,q.cat);
   S.xp=Math.max(0,S.xp-lost);S.totalDone=Math.max(0,S.totalDone-1);
   if(S.catStats&&S.catStats[q.cat])S.catStats[q.cat]=Math.max(0,S.catStats[q.cat]-1);
+  if(q.core==='steps'){q.xp=q.baseXP||STEP_XP;q.steps=null;}
   if(q.cat==='sport'&&S.lastSportDate===today()){
     const still=(S.quests||[]).some(function(x){return x.done&&x.cat==='sport'&&x.core!=='stretch';});
     if(!still)S.lastSportDate=null;
@@ -4090,7 +4128,7 @@ function saveTemplate(){
 function loadTemplate(id){
   const t=(S.templates||[]).find(t=>t.id===id);if(!t)return;
   S.quests=t.quests.map(q=>({...q,id:'dq'+Date.now()+Math.random(),done:false,note:'',difficulty:null}));
-  saveS();rendQuests();msw('daily',document.querySelector('[data-id=daily]'));
+  saveS();rendQuests();msw('daily');
 }
 function delTemplate(id){S.templates=S.templates.filter(t=>t.id!==id);saveS();rendTemplates();}
 function initRQDays(){const days=['Mo','Di','Mi','Do','Fr','Sa','So'];document.getElementById('rqDaysRow').innerHTML=days.map((d,i)=>`<div class="recur-day ${rqDaysSelected[i]?'on':'off'}" onclick="toggleRQDay(${i})" style="flex:1">${d}</div>`).join('');}
@@ -4329,48 +4367,68 @@ function showRw(name,xp,title,msg,sub,bonus){
 function showRankUp(rk){document.getElementById('rankupR').textContent=rk.r;document.getElementById('rankupR').style.color=rk.c;document.getElementById('rankupSub').textContent=`Du hast den ${rk.r}-Rang erreicht!`;setTimeout(()=>document.getElementById('rankupOv').classList.add('show'),500);}
 function clov(id){document.getElementById(id).classList.remove('show');}
 
-// ═══ NAV (ausklappbar, gruppiert) ═══
-const NAV_GROUPS=[
- {g:'QUESTS',    items:[['daily','⚔','Daily'],['special','★','Special'],['boss','💀','Boss'],['dungeon','🏰','Dungeon'],['templates','📋','Vorlagen']]},
- {g:'FORTSCHRITT',items:[['stats','📊','Stats'],['season','🏆','Season'],['streaks','🔥','Streaks'],['body','💪','Körper'],['goals','🎯','Ziele'],['learned','📖','Erlernt']]},
- {g:'CHARAKTER', items:[['skills','🧬','Skills'],['inventory','🎒','Inventar'],['supps','💊','Supps']]},
- {g:'SOZIAL',    items:[['guild','🏰','Gilde'],['friends','👥','Freunde'],['verify','✅','Prüfen']]}
+// ═══ NAVIGATION: untere Reiterleiste + "Mehr"-Blatt ═══
+const NAV_MAIN=[
+ ['daily','⚔','Daily'],
+ ['guild','🏰','Gilde'],
+ ['body','💪','Körper'],      // Mitte = Startseite
+ ['boss','💀','Boss'],
+ ['more','☰','Mehr']
 ];
-let navOpen=false, navCur='daily';
-function navMeta(id){
-  for(let i=0;i<NAV_GROUPS.length;i++){
-    const f=NAV_GROUPS[i].items.find(function(x){return x[0]===id;});
-    if(f)return f;
-  }
-  return ['daily','⚔','Daily'];
+const NAV_MORE=[
+ {g:'QUESTS',     items:[['special','★','Special'],['templates','📋','Vorlagen'],['supps','💊','Supps']]},
+ {g:'FORTSCHRITT',items:[['stats','📊','Stats'],['season','🏆','Season'],['streaks','🔥','Streaks'],['goals','🎯','Ziele'],['learned','📖','Erlernt']]},
+ {g:'CHARAKTER',  items:[['skills','🧬','Skills'],['inventory','🎒','Inventar']]},
+ {g:'SOZIAL',     items:[['friends','👥','Freunde'],['verify','✅','Prüfen']]}
+];
+const START_TAB='body';
+let navCur=START_TAB;
+
+function inMain(id){return NAV_MAIN.some(function(x){return x[0]===id&&x[0]!=='more';});}
+function openQuestCount(){return (S&&S.quests)?S.quests.filter(function(q){return !q.done;}).length:0;}
+
+function renderTabbar(){
+  const el=document.getElementById('tabbar');if(!el)return;
+  el.innerHTML=NAV_MAIN.map(function(it,i){
+    const id=it[0];
+    const active = id==='more' ? !inMain(navCur) : navCur===id;
+    const badge = id==='daily' ? '<span class="tb-badge" id="tbDaily"></span>'
+                : id==='more'  ? '<span class="tb-badge" id="tbMore"></span>' : '';
+    return '<button class="tb'+(i===2?' mid':'')+(active?' on':'')+'" onclick="msw(\''+id+'\')">'
+      +'<span class="tb-ic">'+it[1]+'</span><span>'+it[2]+'</span>'+badge+'</button>';
+  }).join('');
+  updTabBadges();
 }
-function renderNav(){
-  const el=document.getElementById('mnavPanel');if(!el)return;
-  el.innerHTML=NAV_GROUPS.map(function(g){
+function updTabBadges(){
+  const d=document.getElementById('tbDaily');
+  if(d){const n=openQuestCount();d.textContent=n>0?n:'';}
+  try{updVfBadge();}catch(e){}
+  const m=document.getElementById('tbMore');
+  if(m){const n=(typeof VF!=='undefined'&&VF.items)?VF.items.filter(function(v){return v.role==='verifier'&&v.status==='pending';}).length:0;
+    m.textContent=n>0?n:'';}
+}
+function renderMore(){
+  const el=document.getElementById('morePanel');if(!el)return;
+  el.innerHTML=NAV_MORE.map(function(g){
     return '<div class="nv-grp">'+g.g+'</div><div class="nv-row">'+g.items.map(function(it){
-      return '<button class="mnb'+(it[0]===navCur?' on':'')+'" data-id="'+it[0]+'" onclick="msw(\''+it[0]+'\',this)">'
-       +'<span class="nb-ic">'+it[1]+'</span><span>'+it[2]+'</span>'
+      return '<button class="mnb'+(it[0]===navCur?' on':'')+'" onclick="msw(\''+it[0]+'\')">'
+       +'<span class="nb-ic">'+it[1]+'</span><span class="nb-nm">'+it[2]+'</span>'
        +(it[0]==='verify'?'<span class="vf-badge" id="vfBadge" style="display:none">0</span>':'')
        +'</button>';
     }).join('')+'</div>';
   }).join('');
-  const m=navMeta(navCur);
-  const ic=document.getElementById('navCurIc'),nm=document.getElementById('navCurNm');
-  if(ic)ic.textContent=m[1];
-  if(nm)nm.textContent=m[2];
   try{updVfBadge();}catch(e){}
 }
-function toggleNav(force){
-  navOpen=(typeof force==='boolean')?force:!navOpen;
-  const w=document.getElementById('mnavWrap');
-  if(w)w.classList.toggle('open',navOpen);
-}
+function renderNav(){renderTabbar();renderMore();}
+
 function msw(id,btn){
   navCur=id;
   document.querySelectorAll('.mpanel').forEach(p=>p.classList.remove('on'));
   const p=document.getElementById('mp-'+id);if(p)p.classList.add('on');
-  renderNav();
-  toggleNav(false);
+  const app=document.getElementById('app');
+  if(app)app.classList.toggle('bare',id==='more');
+  renderTabbar();
+  if(id==='more')renderMore();
   if(id==='guild'){rendGuild();loadGuild();}
   if(id==='friends'){rendFriends();loadFriends();}
   if(id==='verify'){rendVerifications();loadVerifications();}
@@ -4379,7 +4437,6 @@ function msw(id,btn){
   if(id==='stats')rendStats();
   if(id==='body'){rendMuscles();updMuscleSVG();rendCardio();updCardioSVG();rendMeasures();}
   if(id==='boss')rendBoss();
-  if(id==='dungeon')rendDungeon();
   if(id==='skills')rendSkills();
   if(id==='learned')rendLearned();
   if(id==='goals')rendGoals();
@@ -4447,7 +4504,6 @@ function renderAll(){
 // ═══ INIT ═══
 artPreload();
 initParticles();
-initAvatarGrid();
 S=freshState();
 prevRank=getRank();
 
