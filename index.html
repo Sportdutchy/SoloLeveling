@@ -3089,11 +3089,6 @@ function renderCharEditor(){
    +'<div class="char-preview">'+charFullHTML(420)+'</div>'
    +'<div class="char-tabs">'+TABS.map(function(x){return '<button class="char-tab'+(x.k===charTab?' on':'')+'" onclick="setCharTab(\''+x.k+'\')">'+x.n+'</button>';}).join('')+'</div>'
    +'<div class="char-opts">'+t.list().map(function(o){return charOptChip(t,o);}).join('')+'</div>'
-   +'<div class="tier-prev"><span>Körper ansehen:</span>'
-   +['e','d','c','b','a','s'].map(function(r){
-       return '<button class="tier-btn'+(charTierPreview===r?' on':'')+'" onclick="setTierPreview(\''+r+'\')">'+r.toUpperCase()+'</button>';
-     }).join('')
-   +'<button class="tier-btn'+(charTierPreview?'':' on')+'" onclick="setTierPreview(null)">Aktuell</button></div>'
    +'<div class="acc-hint" id="accHint"></div>'
    +'<button class="char-random" onclick="randomizeChar()">🎲 Zufällig</button>';
   hosts.forEach(function(h){if(h)h.innerHTML=html;});
